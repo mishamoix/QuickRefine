@@ -12,9 +12,8 @@ This command is designed to check English text for grammar, punctuation, and spe
 - Errors should be highlighted in markdown format using double asterisks (**error**).
 - Only major stylistic issues should be flagged; minor stylistic issues should be ignored.
 - Common abbreviations (wtf, brb, bc, bg) should be ignored.
-- Proper nouns and well-known names (e.g., aws, android, ios, usa, llm, cursor) should not be flagged if written in lowercase.
-- Capitalization errors for proper nouns (e.g., "John", "Google") should not be flagged as mistakes.
-- **!IMPORTANT! Capitalization of proper nouns should never be considered an error, even if they refer to specific products or names. Additionally, proper nouns written in lowercase should not be flagged as mistakes.**
+- Proper nouns, including brand names and well-known terms (e.g., AWS, Android, iOS, USA, LLM, Cursor), should **not be flagged as errors regardless of capitalization**.
+- **Proper nouns should be left as they appear in the original text, without enforcing capitalization rules.**
 - If the input is not in English or consists of nonsensical characters, return an error response instead of processing it. **BUT BEFORE RESPONDING WITH AN ERROR, ATTEMPT TO INTERPRET THE TEXT AND PROVIDE A RESPONSE.**
 
 ### Comprehensive Correction Requirement
