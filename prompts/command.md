@@ -22,6 +22,7 @@ This command is designed to check English text for grammar, punctuation, and spe
 - **The corrected text must be fully valid and should not return any new errors if the prompt is applied again.**
 - **The model should NOT return text that still contains mistakes or could be further corrected upon re-evaluation.**
 - **If the system detects an issue, it must fully resolve it before returning the output. The same mistake should never appear again upon re-checking.**
+- **The system should only highlight words that have actually been corrected. Words that remain unchanged should never be marked as modified.**
 
 ### Explanations
 
@@ -112,5 +113,28 @@ If the input is not English text or consists of nonsensical characters, **(BUT T
 ```json
 {
 	"error": "I can't understand you 🥹"
+}
+```
+
+### Example with correct text
+
+User's input:
+
+```text
+I like apples.
+```
+
+Expected output:
+
+```json
+{
+	"text": "I like apples",
+	"mistakes": [],
+	"enhanced": {
+		"reddit": "I like apples tho",
+		"linkedin": "I like apples",
+		"email": "Greetings! I like apples",
+		"whatsapp": "lovin appls"
+	}
 }
 ```

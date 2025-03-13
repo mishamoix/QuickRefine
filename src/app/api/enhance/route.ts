@@ -4,7 +4,7 @@ import openai from '@/libs/openaiClient';
 import path from 'path';
 import fs from 'fs/promises';
 import config, {
-	DEFAULT_LLM,
+	USE_CHAT_GPT,
 	MAX_CHARACTERS,
 	OPENAI_MODEL,
 	ANTHROPIC_MODEL,
@@ -29,21 +29,27 @@ const getUser = async () => {
 };
 
 export async function POST(req: NextRequest) {
+	const isProd = true; // process.env.NODE_ENV === 'production';
 	try {
-		const user = await getUser();
+		if (isProd) {
+			const user = await getUser();
 
-		if (!user) {
-			return NextResponse.json(
-				{ error: 'Unauthorized, please login' },
-				{ status: 401 }
-			);
-		}
+			if (!user) {
+				return NextResponse.json(
+					{ error: 'Unauthorized, please login' },
+					{ status: 401 }
+				);
+			}
 
-		if (user.isBlocked) {
-			return NextResponse.json(
-				{ error: 'You have been blocked, please contact support' },
-				{ status: 403 }
-			);
+			if (user.isBlocked) {
+				return NextResponse.json(
+					{ error: 'You have been blocked, please contact support' },
+					{ status: 403 }
+				);
+			}
+
+			user.numberOfRequests++;
+			await user.save();
 		}
 
 		const { text } = await req.json();
@@ -60,39 +66,38 @@ export async function POST(req: NextRequest) {
 				{ status: 200 }
 			);
 		}
-
-		user.numberOfRequests++;
-		await user.save();
-
-		const systemPrompt = await getSystemPrompt();
 		console.log('Gpt requested with text:', trimmedText);
 
+		const systemPrompt = await getSystemPrompt();
+
 		let data: string | null = null;
-		if (DEFAULT_LLM === 'chatgpt') {
+		if (USE_CHAT_GPT) {
 			const response = await openai.chat.completions.create({
 				model: OPENAI_MODEL,
 				messages: [
 					{ role: 'system', content: systemPrompt },
-					{ role: 'user', content: "User's input: " + trimmedText },
+					{ role: 'user', content: `User's input: "${trimmedText}"` },
 				],
 				response_format: { type: 'json_object' },
 				temperature: 1.0,
 			});
 			data = response.choices[0].message.content;
+			console.log('GPT done');
 		} else {
 			const response = await anthropic.messages.create({
 				max_tokens: 1024,
 				messages: [
 					{ role: 'assistant', content: systemPrompt },
-					{ role: 'user', content: "User's input: " + trimmedText },
+					{ role: 'user', content: `User's input: "${trimmedText}"` },
 				],
 				model: ANTHROPIC_MODEL,
 			});
 			if (response.content[0].type === 'text') {
-				data = response.content[0].text;
+				data = cleanTextForJson(response.content[0].text);
 			}
+			console.log('Anthropic done');
+			console.log('Anthropic response:', data);
 		}
-		console.log('GPT done');
 
 		if (!data) {
 			return NextResponse.json({ error: 'No data' }, { status: 400 });
@@ -101,6 +106,7 @@ export async function POST(req: NextRequest) {
 		console.log('GPT Response', jsonData);
 		return NextResponse.json(jsonData);
 	} catch (error) {
+		console.error('Error in enhance route:', error);
 		return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
 	}
 }
@@ -125,3 +131,7 @@ async function getSystemPrompt(filePath?: string): Promise<string> {
 		throw new Error('Failed to load system prompt');
 	}
 }
+
+const cleanTextForJson = (text: string) => {
+	return text.replace(/```json/g, '').replace(/```/g, '');
+};
