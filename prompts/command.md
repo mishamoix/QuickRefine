@@ -9,26 +9,26 @@ This command is designed to check English text for grammar, punctuation, and spe
 ### Error Highlighting
 
 - Not placing a period at the end of a sentence is NOT a mistake.
-
 - Errors should be highlighted in markdown format using double asterisks (**error**).
-
 - Only major stylistic issues should be flagged; minor stylistic issues should be ignored.
-
 - Common abbreviations (wtf, brb, bc, bg) should be ignored.
-
 - Proper nouns and well-known names (e.g., aws, android, ios, usa, llm, cursor) should not be flagged if written in lowercase.
-
 - Capitalization errors for proper nouns (e.g., "John", "Google") should not be flagged as mistakes.
-
 - **!IMPORTANT! Capitalization of proper nouns should never be considered an error, even if they refer to specific products or names. Additionally, proper nouns written in lowercase should not be flagged as mistakes.**
+- If the input is not in English or consists of nonsensical characters, return an error response instead of processing it. **BUT BEFORE RESPONDING WITH AN ERROR, ATTEMPT TO INTERPRET THE TEXT AND PROVIDE A RESPONSE.**
 
-- If the input is not in English or consists of nonsensical characters, return an error response instead of processing it. BUT BEFORE ANSWER THAT DOUBLE CHECK AND TRY TO RESPOND SOMETHING.
+### Comprehensive Correction Requirement
+
+- **The system MUST ensure that all errors are corrected in a single pass.**
+- **The corrected text must be fully valid and should not return any new errors if the prompt is applied again.**
+- **The model should NOT return text that still contains mistakes or could be further corrected upon re-evaluation.**
+- **If the system detects an issue, it must fully resolve it before returning the output. The same mistake should never appear again upon re-checking.**
 
 ### Explanations
 
 - Explanations should be detailed and comprehensive, providing a full understanding of why the mistake is incorrect.
 - Each explanation should reference a specific grammar rule (e.g., Present Perfect Continuous) and provide context for better understanding.
-- Examples of correct usage should be provided where applicable. (it should be in the different sentences and context to help user understand the rule)
+- Examples of correct usage should be provided where applicable. _(It should be in different sentences and contexts to help the user understand the rule.)_
 
 ### Language
 
@@ -40,27 +40,34 @@ This command is designed to check English text for grammar, punctuation, and spe
 - The corrected text should only include grammatical, spelling, and punctuation corrections, avoiding any stylistic improvements.
 - The corrected version of the input text should be provided with correct words marked using markdown bold (**corrected**).
 - All original line breaks from the input should be preserved in the output.
+- **If the text still contains mistakes upon re-evaluation, return an error message stating: "There are unresolved mistakes. Please ensure full correction." This should NEVER happen. The model must fix ALL mistakes in one pass.**
 
 ### JSON Output
 
 - The JSON output must include the original input text to track what was corrected.
 - Property "text" should be corrected with the correct words marked using markdown bold (**corrected**).
-- Don't use markdown bold in the mistackes, it'll be styled separately.
+- **Don't use markdown bold in the mistakes; they'll be styled separately.**
 
-User's input: I has went to the market yesterday, and buyed some apples and they was fresh. This the apples was so good.
+#### Example:
 
-The output MUST be in JSON format with the following structure:
+User's input:
+
+```text
+I has went to the market yesterday, and buyed some apples and they was fresh. This the apples was so good.
+```
+
+Expected output:
 
 ```json
 {
-	"text": "I **had gone** to the market yesterday, and **bought** some apples and they **were** fresh. **This apples** was so good.",
+	"text": "I **had gone** to the market yesterday, and **bought** some apples and they **were** fresh. **These apples** **were** so good.",
 	"mistakes": [
 		{
 			"error": "has went",
 			"corrected": "had gone",
 			"explanation": "Incorrect verb form. The verb 'has' should not be used with 'went' because 'went' is the past tense of 'go'. Instead, the correct form is 'had gone' because when describing an action that was completed before another past event, the past perfect tense should be used.",
 			"rule": "Past Perfect is used when describing a past action before another past action.",
-			"example": "The team has won the championship"
+			"example": "The team had won the championship before the coach retired."
 		},
 		{
 			"error": "buyed",
@@ -78,10 +85,10 @@ The output MUST be in JSON format with the following structure:
 		},
 		{
 			"error": "the",
-			"corrected": "This",
-			"explanation": "The word 'the' is not needed in this sentence. It should be removed to improve the sentence structure.",
-			"rule": "The word 'the' is not needed in this sentence.",
-			"example": "These feelings are real."
+			"corrected": "These",
+			"explanation": "The word 'the' is incorrect in this sentence. 'These' should be used to properly reference the apples.",
+			"rule": "Use 'these' for plural nouns when referring to specific items.",
+			"example": "These books are interesting."
 		}
 	],
 	"enhanced": {
@@ -95,9 +102,13 @@ The output MUST be in JSON format with the following structure:
 
 ### Invalid Input Example
 
-User's input: asdkj asdkjasd 12312
+User's input:
 
-If the input is not English text or consists of nonsensical characters, (BUT TRY FEW TIMES TO UNDERSTAND THE TEXT AND RESPOND SOMETHING, IF NO THEN GO WITH ERROR) return:
+```text
+asdkj asdkjasd 12312
+```
+
+If the input is not English text or consists of nonsensical characters, **(BUT TRY A FEW TIMES TO UNDERSTAND THE TEXT AND RESPOND SOMETHING, IF NOT POSSIBLE THEN RETURN ERROR)** return:
 
 ```json
 {
