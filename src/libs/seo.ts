@@ -7,12 +7,18 @@ export const getSEOTags = ({
 	keywords,
 	openGraph,
 	canonicalUrlRelative,
+	iosIcon,
 	extraTags,
 }: Metadata & {
 	canonicalUrlRelative?: string;
+	iosIcon?: {
+		url: string;
+		sizes?: string;
+	};
 	extraTags?: Record<string, any>;
 } = {}) => {
 	const defaultImageUrl = `https://${config.domainName}/og-image.png`; // Add your default image URL here
+	const defaultIconUrl = `https://${config.domainName}/apple-touch-icon.png`; // Default iOS icon
 
 	return {
 		title: title || config.appName,
@@ -39,6 +45,22 @@ export const getSEOTags = ({
 			card: 'summary_large_image',
 			creator: '',
 			images: [defaultImageUrl],
+		},
+		icons: {
+			icon: [{ url: '/favicon.ico' }],
+			apple: [
+				{
+					url: iosIcon?.url || defaultIconUrl,
+					sizes: iosIcon?.sizes || '180x180',
+					type: 'image/png',
+				},
+			],
+		},
+		// iOS specific meta tags
+		other: {
+			'apple-mobile-web-app-capable': 'yes',
+			'apple-mobile-web-app-status-bar-style': 'black',
+			'apple-mobile-web-app-title': title || config.appName,
 		},
 		...(canonicalUrlRelative && {
 			alternates: { canonical: canonicalUrlRelative },
