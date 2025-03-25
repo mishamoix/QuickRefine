@@ -29,7 +29,7 @@ const getUser = async () => {
 };
 
 export async function POST(req: NextRequest) {
-	const isProd = true; // process.env.NODE_ENV === 'production';
+	const isProd = process.env.NODE_ENV !== 'development';
 	try {
 		if (isProd) {
 			const user = await getUser();

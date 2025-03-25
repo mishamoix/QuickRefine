@@ -1,7 +1,7 @@
 export const GITHUB_URL = 'https://github.com/mishamoix/QuickRefine';
 export const SUPPORT_EMAIL = 'quickrefine@bizarrefusion.com';
 
-export const USE_CHAT_GPT = false;
+export const USE_CHAT_GPT = process.env.LLM_PROVIDER === 'openai';
 export const OPENAI_MODEL = 'gpt-4o';
 export const ANTHROPIC_MODEL = 'claude-3-7-sonnet-latest';
 
