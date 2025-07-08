@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
 				model: OPENAI_MODEL,
 				messages: [
 					{ role: 'system', content: systemPrompt },
-					{ role: 'user', content: `User's input: "${trimmedText}"` },
+					{ role: 'user', content: `User's text: \""${trimmedText}"\"` },
 				],
 				response_format: { type: 'json_object' },
 				temperature: 1.0,

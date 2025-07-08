@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-	BeakerIcon,
 	BookOpenIcon,
 	CheckCircleIcon,
 	ClipboardDocumentListIcon,
@@ -107,13 +106,6 @@ export default function TextAnalyzer() {
 			});
 		}
 	};
-
-	const enhancedTextArray = data?.enhanced
-		? Object.entries(data.enhanced).map(([style, text]) => ({
-				style,
-				text,
-		  }))
-		: [];
 
 	const handleLogin = () => {
 		localStorage.setItem('current_user_text', currentText);
@@ -244,34 +236,6 @@ export default function TextAnalyzer() {
 										{mistake.example}
 									</p>
 								</div>
-							</div>
-						))}
-					</div>
-				</div>
-			)}
-			{data && data.enhanced && (
-				<div className='space-y-3 card'>
-					<p className='flex items-center gap-2 text-lg font-medium text-slate-800'>
-						<BeakerIcon className='text-purple-500 size-6' />
-						Style Variations
-					</p>
-					<div className='flex flex-col gap-4 text-left'>
-						{enhancedTextArray.map((item, idx) => (
-							<div
-								key={idx}
-								className='px-4 py-2 border border-purple-200 rounded-md relative shadow-[inset_0px_0px_8px_rgba(168,85,247,0.3)] hover:shadow-[inset_0px_2px_4px_rgba(0,0,0,0)] transition-shadow duration-300'
-							>
-								<button
-									onClick={() => copyText(item.text)}
-									className='absolute top-1 right-1 btn btn-ghost btn-sm'
-									title='Copy Text'
-								>
-									<DocumentDuplicateIcon className='size-4 text-slate-800' />
-								</button>
-								<h3 className='font-bold text-purple-800 text-md'>
-									{item.style.charAt(0).toUpperCase() + item.style.slice(1)}
-								</h3>
-								<p className='text-md'>{item.text}</p>
 							</div>
 						))}
 					</div>

@@ -6,16 +6,9 @@ export interface Mistake {
 	example: string;
 }
 
-export interface EnhancedStrings {
-	linkedin: string;
-	email: string;
-	whatsapp: string;
-}
-
 export interface EnhancedText {
 	text: string;
 	mistakes?: Mistake[];
-	enhanced?: EnhancedStrings;
 }
 
 export interface ApiError {
