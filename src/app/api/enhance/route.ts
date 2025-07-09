@@ -77,12 +77,13 @@ export async function POST(req: NextRequest) {
 				messages: [
 					{ role: 'system', content: systemPrompt },
 					{ role: 'user', content: `User's text: \""${trimmedText}"\"` },
+					{ role: 'assistant', content: '{' },
 				],
 				response_format: { type: 'json_object' },
 				temperature: 1.0,
 			});
 			data = response.choices[0].message.content;
-			console.log('GPT done');
+			console.log('GPT done', data);
 		} else {
 			const response = await anthropic.messages.create({
 				max_tokens: 1024,
