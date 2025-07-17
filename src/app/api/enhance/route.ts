@@ -76,11 +76,11 @@ export async function POST(req: NextRequest) {
 				model: OPENAI_MODEL,
 				messages: [
 					{ role: 'system', content: systemPrompt },
-					{ role: 'user', content: `User's text: \""${trimmedText}"\"` },
+					{ role: 'user', content: trimmedText },
 					{ role: 'assistant', content: '{' },
 				],
 				response_format: { type: 'json_object' },
-				temperature: 1.0,
+				temperature: 0.6,
 			});
 			data = response.choices[0].message.content;
 			console.log('GPT done', data);
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
 				max_tokens: 1024,
 				messages: [
 					{ role: 'assistant', content: systemPrompt },
-					{ role: 'user', content: `User input: ${trimmedText}` },
+					{ role: 'user', content: trimmedText },
 				],
 				model: ANTHROPIC_MODEL,
 			});
