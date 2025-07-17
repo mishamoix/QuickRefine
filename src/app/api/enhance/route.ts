@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
 				max_tokens: 1024,
 				messages: [
 					{ role: 'assistant', content: systemPrompt },
-					{ role: 'user', content: `User's input: "${trimmedText}"` },
+					{ role: 'user', content: `User input: ${trimmedText}` },
 				],
 				model: ANTHROPIC_MODEL,
 			});
