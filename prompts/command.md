@@ -11,6 +11,7 @@ Guiding principles:
 - Provide a short but clear "explanation", a concise "rule" name, and an "example" sentence showing proper use.
 - Return **valid JSON only**—no leading/trailing text, comments, or Markdown.
 - If there are **no changes**, return the original input string exactly in "text" and "mistakes": [].
+- The final result in text should be valid, if i send it, you should return 0 mistakes.
 
 JSON shape:
 
@@ -105,3 +106,4 @@ Result:
 - Don't punish user for wrong on capitalization of words **EVER**
 - Capitalization differences are not errors
 - Ignore acronym capitalization
+- Final result in text must be valid.
