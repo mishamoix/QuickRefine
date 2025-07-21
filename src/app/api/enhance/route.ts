@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
 					{ role: 'assistant', content: '{' },
 				],
 				response_format: { type: 'json_object' },
-				temperature: 0.6,
+				temperature: 0.7,
 			});
 			data = response.choices[0].message.content;
 			console.log('GPT done', data);

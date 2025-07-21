@@ -106,4 +106,4 @@ Result:
 - Don't punish user for wrong on capitalization of words **EVER**
 - Capitalization differences are not errors
 - Ignore acronym capitalization
-- Final result in text must be valid.
+- Final result in "text" must be valid! If I run this prompt again with result from "text" it should return 0 mistakes
