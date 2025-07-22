@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import anthropic from '@/libs/anthropicClient';
-import openai from '@/libs/openaiClient';
+import openai, { langfuse } from '@/libs/openaiClient';
 import path from 'path';
 import fs from 'fs/promises';
 import config, {
@@ -30,10 +30,13 @@ const getUser = async () => {
 
 export async function POST(req: NextRequest) {
 	const isProd = process.env.NODE_ENV !== 'development';
+	const user = await getUser();
+	const trace = langfuse.trace({
+		name: 'enhance-request',
+		userId: user?.email || 'anonymous',
+	});
 	try {
 		if (isProd) {
-			const user = await getUser();
-
 			if (!user) {
 				return NextResponse.json(
 					{ error: 'Unauthorized, please login' },
@@ -55,6 +58,14 @@ export async function POST(req: NextRequest) {
 		const { text } = await req.json();
 		const trimmedText = cleanText(text);
 
+		trace.update({
+			input: {
+				text: trimmedText,
+				isProd,
+			},
+			tags: isProd ? ['production'] : ['development'],
+		});
+
 		if (!trimmedText || trimmedText === '') {
 			return NextResponse.json({ error: 'Text is required' }, { status: 200 });
 		}
@@ -66,12 +77,24 @@ export async function POST(req: NextRequest) {
 				{ status: 200 }
 			);
 		}
-		console.log('Gpt requested with text:', trimmedText);
+		console.log(
+			`[${trace.id}] Gpt requested with text:`,
+			trimmedText.substring(0, 100)
+		);
 
 		const systemPrompt = await getSystemPrompt();
 
 		let data: string | null = null;
 		if (USE_CHAT_GPT) {
+			const generation = trace.generation({
+				name: 'openai-completion',
+				input: [
+					{ role: 'system', content: systemPrompt },
+					{ role: 'user', content: trimmedText },
+					{ role: 'assistant', content: '{' },
+				],
+				model: OPENAI_MODEL,
+			});
 			const response = await openai.chat.completions.create({
 				model: OPENAI_MODEL,
 				messages: [
@@ -83,8 +106,23 @@ export async function POST(req: NextRequest) {
 				temperature: 0.7,
 			});
 			data = response.choices[0].message.content;
-			console.log('GPT done', data);
+			generation.update({
+				output: data,
+				usage: {
+					input: response.usage?.prompt_tokens,
+					output: response.usage?.completion_tokens,
+				},
+			});
+			console.log(`[${trace.id}] GPT done`);
 		} else {
+			const generation = trace.generation({
+				name: 'anthropic-completion',
+				input: [
+					{ role: 'assistant', content: systemPrompt },
+					{ role: 'user', content: trimmedText },
+				],
+				model: ANTHROPIC_MODEL,
+			});
 			const response = await anthropic.messages.create({
 				max_tokens: 1024,
 				messages: [
@@ -96,19 +134,30 @@ export async function POST(req: NextRequest) {
 			if (response.content[0].type === 'text') {
 				data = cleanTextForJson(response.content[0].text);
 			}
-			console.log('Anthropic done');
-			console.log('Anthropic response:', data);
+			generation.update({
+				output: data,
+			});
+			console.log(`[${trace.id}] Anthropic done`);
 		}
+
+		trace.update({
+			output: data,
+		});
 
 		if (!data) {
 			return NextResponse.json({ error: 'No data' }, { status: 400 });
 		}
 		const jsonData = JSON.parse(data);
-		console.log('GPT Response', jsonData);
+
+		console.log(`[${trace.id}] GPT Response`);
 		return NextResponse.json(jsonData);
 	} catch (error) {
-		console.error('Error in enhance route:', error);
+		console.error(`[${trace.id}] Error in enhance route:`, error);
+		const statusMessage =
+			error instanceof Error ? error.message : String(error);
 		return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+	} finally {
+		await langfuse.shutdownAsync();
 	}
 }
 

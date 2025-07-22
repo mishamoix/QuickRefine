@@ -1,4 +1,11 @@
 import OpenAI from 'openai';
+import { Langfuse } from 'langfuse';
+
+export const langfuse = new Langfuse({
+	secretKey: process.env.LANGFUSE_SECRET_KEY,
+	publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+	baseUrl: process.env.LANGFUSE_HOST,
+});
 
 const llm = new OpenAI({
 	apiKey: process.env.LLM_API_KEY,
