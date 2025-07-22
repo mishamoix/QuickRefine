@@ -154,3 +154,4 @@ Result:
 - Capitalization differences are not errors
 - Ignore acronym capitalization
 - Analyze the final result from the text, it should be correct, if I run this prompt again with result from "text" it should return 0 mistakes
+- Carefully review full text, FIND ALL mistakes, fix ALL OF THEM!
