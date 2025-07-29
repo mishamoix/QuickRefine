@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/libs/next-auth';
 import User from '@/app/models/User';
 import connectMongo from '@/libs/mongoose';
-import { langfuse } from '@/libs/openaiClient';
+import { langfuse } from '@/libs/langfuse';
 import { fixText, explainCorrections, createTraceGeneration } from '@/libs/llm';
 import { loadEnhancePrompts } from '@/libs/prompts';
 

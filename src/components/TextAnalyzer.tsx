@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import {
 	BookOpenIcon,
 	CheckCircleIcon,
-	ClipboardDocumentListIcon,
 	DocumentDuplicateIcon,
 	ExclamationCircleIcon,
 	LanguageIcon,
@@ -12,7 +11,7 @@ import {
 	XCircleIcon,
 } from '@heroicons/react/24/outline';
 import { cleanText } from '@/libs';
-import { useMutation, QueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { ApiResponse, EnhancedText } from '@/app/models';
 import { toast } from 'react-hot-toast';
 import config, { MAX_CHARACTERS } from '@/config';
