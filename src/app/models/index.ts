@@ -11,8 +11,12 @@ export interface EnhancedText {
 	mistakes?: Mistake[];
 }
 
+export interface FastModeResponse {
+	text: string;
+}
+
 export interface ApiError {
 	error: string;
 }
 
-export type ApiResponse = EnhancedText | ApiError;
+export type ApiResponse = EnhancedText | FastModeResponse | ApiError;

@@ -23,6 +23,11 @@ const explainSchema = z.object({
 	),
 });
 
+const fastModeSchema = z.object({
+	text: z.string(),
+	error: z.string().optional(),
+});
+
 export interface LLMUsage {
 	inputTokens?: number;
 	outputTokens?: number;
@@ -109,6 +114,17 @@ export async function explainCorrections(
 		explainSchema,
 		traceGeneration
 	);
+}
+
+/**
+ * Fast mode: Single-shot text enhancement with corrections and explanations
+ */
+export async function fastModeEnhance(
+	text: string,
+	prompt: string,
+	traceGeneration?: any
+): Promise<LLMResponse<z.infer<typeof fastModeSchema>>> {
+	return generateWithProvider(prompt, text, fastModeSchema, traceGeneration);
 }
 
 /**

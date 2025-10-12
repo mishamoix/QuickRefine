@@ -28,3 +28,10 @@ export async function loadEnhancePrompts() {
 		explainPrompt,
 	};
 }
+
+/**
+ * Load fast mode prompt
+ */
+export async function loadFastModePrompt() {
+	return await loadPrompt('fast_mode.md');
+}

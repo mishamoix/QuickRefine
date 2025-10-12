@@ -1,0 +1,6 @@
+---
+alwaysApply: true
+---
+
+Use daisyui and tailwindcss for styling
+Use app router for routing

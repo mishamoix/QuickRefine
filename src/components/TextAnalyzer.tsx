@@ -9,6 +9,7 @@ import {
 	LanguageIcon,
 	ShieldExclamationIcon,
 	XCircleIcon,
+	BoltIcon,
 } from '@heroicons/react/24/outline';
 import { cleanText } from '@/libs';
 import { useMutation } from '@tanstack/react-query';
@@ -19,6 +20,7 @@ import { signIn, useSession } from 'next-auth/react';
 
 export default function TextAnalyzer() {
 	const [currentText, setCurrentText] = useState('');
+	const [isFastMode, setIsFastMode] = useState(false);
 
 	const cleanedText = cleanText(currentText);
 	const characterCount = cleanedText.length;
@@ -33,15 +35,22 @@ export default function TextAnalyzer() {
 			setCurrentText(savedText);
 			localStorage.removeItem('current_user_text');
 		}
+
+		// Restore Fast Mode preference
+		const savedMode = localStorage.getItem('text_analyzer_mode');
+		if (savedMode === 'fast') {
+			setIsFastMode(true);
+		}
 	}, []);
 
-	const { mutate, data, error, isPending } = useMutation<
+	const { mutate, data, error, isPending, reset } = useMutation<
 		EnhancedText,
 		Error,
 		{ text: string }
 	>({
 		mutationFn: async ({ text }) => {
-			const response = await fetch('/api/enhance', {
+			const endpoint = isFastMode ? '/api/enhance/fast' : '/api/enhance';
+			const response = await fetch(endpoint, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -111,135 +120,193 @@ export default function TextAnalyzer() {
 		signIn('google', { callbackUrl: config.auth.callbackUrl });
 	};
 
+	const handleModeToggle = () => {
+		if (isPending) return; // Block toggle during pending request
+
+		const newMode = !isFastMode;
+		setIsFastMode(newMode);
+		localStorage.setItem('text_analyzer_mode', newMode ? 'fast' : 'classic');
+		reset(); // Clear previous results
+	};
+
 	return (
-		<div className='mt-20 space-y-10 max-md:mt-10'>
-			<div className='card'>
-				<form onSubmit={handleSubmit}>
-					<div className='relative pt-4'>
-						<textarea
-							name='text'
-							value={currentText}
-							onChange={handleTextChange}
-							onKeyDown={handleKeyDown}
-							placeholder='Write your text here. e.g. "I has went to the market yesterday, and buyed some apples and they was fresh."'
-							className={`w-full max-md:min-h-[25vh] max-sm:min-h-[20vh] min-h-40 text-base-content text-base border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${
-								isOverLimit
-									? 'border-error focus:border-error focus:ring-error'
-									: 'border-slate-200 focus:border-primary focus:ring-primary'
+		<div className='mt-20 max-md:mt-10'>
+			<div className='space-y-6'>
+				<div className='flex items-center justify-center'>
+					<div
+						className='flex items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200'
+						title='Uses more intelligent and fast model'
+					>
+						<BoltIcon
+							className={`size-6 ${
+								isFastMode ? 'text-purple-600' : 'text-slate-400'
 							}`}
 						/>
-						<div className='absolute -top-3 right-1'>
-							<p
-								className={`text-xs px-1 py-1 max-sm:py-2 rounded ${
-									isOverLimit ? 'text-error' : 'text-slate-300'
+						<label className='flex items-center gap-3 cursor-pointer'>
+							<div className='text-left'>
+								<div className='font-semibold text-slate-800'>Fast Mode</div>
+							</div>
+							<input
+								type='checkbox'
+								className='toggle toggle-lg toggle-primary'
+								checked={isFastMode}
+								onChange={handleModeToggle}
+								disabled={isPending}
+							/>
+						</label>
+					</div>
+				</div>
+				<div className='card'>
+					<form onSubmit={handleSubmit}>
+						<div className='relative pt-4'>
+							<textarea
+								name='text'
+								value={currentText}
+								onChange={handleTextChange}
+								onKeyDown={handleKeyDown}
+								placeholder='Write your text here. e.g. "I has went to the market yesterday, and buyed some apples and they was fresh."'
+								className={`w-full max-md:min-h-[25vh] max-sm:min-h-[20vh] min-h-40 text-base-content text-base border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${
+									isOverLimit
+										? 'border-error focus:border-error focus:ring-error'
+										: 'border-slate-200 focus:border-primary focus:ring-primary'
+								}`}
+							/>
+							<div className='absolute -top-3 right-1'>
+								<p
+									className={`text-xs px-1 py-1 max-sm:py-2 rounded ${
+										isOverLimit ? 'text-error' : 'text-slate-300'
+									}`}
+								>
+									{characterCount}/{MAX_CHARACTERS}
+								</p>
+							</div>
+						</div>
+						<div className='flex items-center justify-between gap-4 pt-4'>
+							{error && (
+								<div className='flex items-start gap-2'>
+									<LanguageIcon className='size-6 text-error' />
+									<span className='text-left text-error'>{error.message}</span>
+								</div>
+							)}
+							<p className='flex items-start gap-2 text-slate-800'>
+								{data && !isFastMode && (
+									<>
+										{hasMistakes ? (
+											<XCircleIcon className='size-6 text-error' />
+										) : (
+											<CheckCircleIcon className='text-green-500 size-6' />
+										)}
+										<span className='text-left'>
+											{hasMistakes
+												? 'Mistakes found'
+												: 'No mistakes, excellent!'}
+										</span>
+									</>
+								)}
+							</p>
+							<button
+								type='submit'
+								className={`btn btn-primary ${
+									!isTextValid || isPending ? 'btn-disabled' : ''
 								}`}
 							>
-								{characterCount}/{MAX_CHARACTERS}
-							</p>
+								{isPending || status === 'loading' ? (
+									<span className='loading loading-dots loading-sm'></span>
+								) : isLoggedIn ? (
+									'Analyze text'
+								) : (
+									'Sign In & Analyze'
+								)}
+							</button>
 						</div>
-					</div>
-					<div className='flex items-center justify-between gap-4 pt-4'>
-						{error && (
-							<div className='flex items-start gap-2'>
-								<LanguageIcon className='size-6 text-error' />
-								<span className='text-left text-error'>{error.message}</span>
+					</form>
+					{/* Fast Mode Results */}
+					{isFastMode && data && data.text && (
+						<div className='mt-4 p-4 text-left border border-slate-200 rounded-lg bg-slate-50 text-slate-800'>
+							<div
+								className='whitespace-pre-wrap'
+								dangerouslySetInnerHTML={{
+									__html: data.text.replace(
+										/\*\*(.*?)\*\*/g,
+										'<strong>$1</strong>'
+									),
+								}}
+							/>
+						</div>
+					)}
+					{/* Classic Mode Results */}
+					{!isFastMode &&
+						data &&
+						data.mistakes &&
+						data.mistakes.length > 0 &&
+						data.text && (
+							<div className='relative py-2 pl-3 pr-20 mt-4 text-left border border-green-200 rounded text-slate-800 bg-green-50/70'>
+								<button
+									onClick={() => copyText(data.text)}
+									className='absolute top-1 right-1 btn btn-ghost btn-sm'
+									title='Copy Text'
+								>
+									<DocumentDuplicateIcon className='size-4 text-slate-800' />
+								</button>
+								<span
+									dangerouslySetInnerHTML={{
+										__html: data.text.replace(
+											/\*\*(.*?)\*\*/g,
+											'<strong>$1</strong>'
+										),
+									}}
+								/>
 							</div>
 						)}
-						<p className='flex items-start gap-2 text-slate-800'>
-							{data && (
-								<>
-									{hasMistakes ? (
-										<XCircleIcon className='size-6 text-error' />
-									) : (
-										<CheckCircleIcon className='text-green-500 size-6' />
-									)}
-									<span className='text-left'>
-										{hasMistakes ? 'Mistakes found' : 'No mistakes, excellent!'}
-									</span>
-								</>
-							)}
+				</div>
+				{!isFastMode && data && data.mistakes && data.mistakes.length > 0 && (
+					<div className='space-y-3 card'>
+						<p className='flex items-center gap-2 text-lg font-medium text-slate-800'>
+							<ExclamationCircleIcon className='size-6 text-error' />
+							Grammar Analysis
 						</p>
-						<button
-							type='submit'
-							className={`btn btn-primary ${
-								!isTextValid || isPending ? 'btn-disabled' : ''
-							}`}
-						>
-							{isPending || status === 'loading' ? (
-								<span className='loading loading-dots loading-sm'></span>
-							) : isLoggedIn ? (
-								'Analyze text'
-							) : (
-								'Sign In & Analyze'
-							)}
-						</button>
-					</div>
-				</form>
-				{data && data.mistakes && data.mistakes.length > 0 && data.text && (
-					<div className='relative py-2 pl-3 pr-20 mt-4 text-left border border-green-200 rounded text-slate-800 bg-green-50/70'>
-						<button
-							onClick={() => copyText(data.text)}
-							className='absolute top-1 right-1 btn btn-ghost btn-sm'
-							title='Copy Text'
-						>
-							<DocumentDuplicateIcon className='size-4 text-slate-800' />
-						</button>
-						<span
-							dangerouslySetInnerHTML={{
-								__html: data.text.replace(
-									/\*\*(.*?)\*\*/g,
-									'<strong>$1</strong>'
-								),
-							}}
-						/>
+						<div className='flex flex-col gap-4'>
+							{data.mistakes.map((mistake, idx) => (
+								<div
+									key={idx}
+									className='p-4 space-y-4 text-left border rounded-md shadow-[inset_0px_0px_8px_rgba(244,63,94,0.3)] border-rose-200 hover:shadow-[inset_0px_2px_4px_rgba(0,0,0,0)] transition-shadow duration-300'
+								>
+									<div>
+										<p className='flex items-center gap-2 mb-3 text-sm font-medium text-error'>
+											<ShieldExclamationIcon className='size-4 ' />
+											Mistake {idx + 1}:
+										</p>
+										<p className='text-base font-medium text-emerald-500'>
+											<span className='line-through text-error'>
+												{mistake.error}
+											</span>
+											{' →  '}
+											{mistake.corrected}
+										</p>
+										<p className='text-sm text-slate-500'>{mistake.rule}</p>
+									</div>
+									<div className='border-b border-rose-200 opacity-85' />
+									<div className=''>
+										<p className='flex items-center gap-2 mb-3 text-sm font-medium text-blue-600 '>
+											<BookOpenIcon className='size-4' />
+											Explanation:
+										</p>
+										<p className='block mb-1 text-sm text-blue-600'>
+											{mistake.explanation}
+										</p>
+										<p className='text-sm text-slate-500'>
+											<span className='font-medium text-slate-800'>
+												Example:
+											</span>{' '}
+											{mistake.example}
+										</p>
+									</div>
+								</div>
+							))}
+						</div>
 					</div>
 				)}
 			</div>
-			{data && data.mistakes && data.mistakes.length > 0 && (
-				<div className='space-y-3 card'>
-					<p className='flex items-center gap-2 text-lg font-medium text-slate-800'>
-						<ExclamationCircleIcon className='size-6 text-error' />
-						Grammar Analysis
-					</p>
-					<div className='flex flex-col gap-4'>
-						{data.mistakes.map((mistake, idx) => (
-							<div
-								key={idx}
-								className='p-4 space-y-4 text-left border rounded-md shadow-[inset_0px_0px_8px_rgba(244,63,94,0.3)] border-rose-200 hover:shadow-[inset_0px_2px_4px_rgba(0,0,0,0)] transition-shadow duration-300'
-							>
-								<div>
-									<p className='flex items-center gap-2 mb-3 text-sm font-medium text-error'>
-										<ShieldExclamationIcon className='size-4 ' />
-										Mistake {idx + 1}:
-									</p>
-									<p className='text-base font-medium text-emerald-500'>
-										<span className='line-through text-error'>
-											{mistake.error}
-										</span>
-										{' →  '}
-										{mistake.corrected}
-									</p>
-									<p className='text-sm text-slate-500'>{mistake.rule}</p>
-								</div>
-								<div className='border-b border-rose-200 opacity-85' />
-								<div className=''>
-									<p className='flex items-center gap-2 mb-3 text-sm font-medium text-blue-600 '>
-										<BookOpenIcon className='size-4' />
-										Explanation:
-									</p>
-									<p className='block mb-1 text-sm text-blue-600'>
-										{mistake.explanation}
-									</p>
-									<p className='text-sm text-slate-500'>
-										<span className='font-medium text-slate-800'>Example:</span>{' '}
-										{mistake.example}
-									</p>
-								</div>
-							</div>
-						))}
-					</div>
-				</div>
-			)}
 		</div>
 	);
 }
