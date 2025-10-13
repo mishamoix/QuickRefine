@@ -15,7 +15,7 @@ Structure:
 
 1. **Corrected text:**
    <text with **bold** changes> OR "✅ No mistakes, excellent"
-2. **Alternatives:** (if any variations would sound better - can be any type: more natural, informal, formal, concise, professional, friendly, etc. Up to 3 alternatives, try to add more natural every time)
+2. **Alternatives:** (ALWAYS provide 2-3 alternative versions - can be any type: more natural, informal, formal, concise, professional, friendly, etc. Always include at least one more natural alternative)
    ** - <Type>**: <version>
 3. **Mistakes:** (if any - keep explanations SHORT and concise, 5-10 words max)
    "<error>" → "<corrected>": <brief explanation>
@@ -23,7 +23,7 @@ Structure:
 # Examples
 
 Input: ok i guess we meet tmrw 9am
-Output: {"text":"✅ No mistakes, excellent"}
+Output: {"text":"✅ No mistakes, excellent\n\n**Alternatives:**\n** - More formal**: I suppose we can meet tomorrow at 9 AM\n** - More natural**: Okay, let's meet tomorrow at 9 AM"}
 
 Input: I going to store with friend yesterday
 Output: {"text":"**Corrected text:**\n**I went** to **the** store with **a** friend yesterday\n\n**Alternatives:**\n** - More natural**: I stopped by the store with a friend yesterday\n** - More concise**: Visited the store with a friend yesterday\n\n**Mistakes:**\n- \"I going\" → \"I went\": Need past tense\n- \"to store\" → \"to the store\": Missing article\n- \"with friend\" → \"with a friend\": Missing article"}
