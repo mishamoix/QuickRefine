@@ -4,8 +4,8 @@ Check the vocab and grammar in this text. Preserve the writer's voice and tone -
 
 - Work **only in English**. If not English, return: {"error":"I can't understand you 🥹"}
 - Fix only meaning-blocking errors (grammar, wrong words, unclear meaning)
-- **Missing articles ("a", "the", etc.) are mistakes** - always fix them
-- Ignore: capitalization, casual punctuation, informal speech, chatty fragments
+- Missing articles ("a", "the", etc.) are mistakes - always fix them
+- Ignore: capitalization, casual punctuation, informal speech, chatty fragments, and commas
 - Preserve: tone, emoji, informality
 
 # Output Format
