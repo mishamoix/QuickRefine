@@ -2,7 +2,12 @@ import { generateObject } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { z } from 'zod';
-import { USE_CHAT_GPT, OPENAI_MODEL, ANTHROPIC_MODEL } from '@/config';
+import {
+	LLM_PROVIDER,
+	OPENAI_MODEL,
+	ANTHROPIC_MODEL,
+	OPENROUTER_MODEL,
+} from '@/config';
 
 // Response schemas
 const fixTextSchema = z.object({
@@ -47,6 +52,11 @@ const anthropic = createAnthropic({
 	apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+const openrouter = createOpenAI({
+	apiKey: process.env.OPENROUTER_API_KEY,
+	baseURL: 'https://openrouter.ai/api/v1',
+});
+
 /**
  * Generate a response using the configured LLM provider
  */
@@ -56,9 +66,20 @@ async function generateWithProvider<T>(
 	schema: z.ZodSchema<T>,
 	traceGeneration?: any
 ): Promise<LLMResponse<T>> {
-	const model = USE_CHAT_GPT
-		? openai(OPENAI_MODEL)
-		: anthropic(ANTHROPIC_MODEL);
+	let model;
+
+	switch (LLM_PROVIDER) {
+		case 'openai':
+			model = openai(OPENAI_MODEL);
+			break;
+		case 'openrouter':
+			model = openrouter(OPENROUTER_MODEL);
+			break;
+		case 'anthropic':
+		default:
+			model = anthropic(ANTHROPIC_MODEL);
+			break;
+	}
 
 	const result = await generateObject({
 		model,
@@ -131,9 +152,24 @@ export async function fastModeEnhance(
  * Helper to create trace generation for langfuse
  */
 export function createTraceGeneration(trace: any, name: string, input: any) {
+	let modelName;
+
+	switch (LLM_PROVIDER) {
+		case 'openai':
+			modelName = OPENAI_MODEL;
+			break;
+		case 'openrouter':
+			modelName = OPENROUTER_MODEL;
+			break;
+		case 'anthropic':
+		default:
+			modelName = ANTHROPIC_MODEL;
+			break;
+	}
+
 	return trace.generation({
 		name,
 		input,
-		model: USE_CHAT_GPT ? OPENAI_MODEL : ANTHROPIC_MODEL,
+		model: modelName,
 	});
 }
