@@ -1,4 +1,33 @@
-<!-- 1277132a-b797-4a64-b37b-5e254f7097c6 34d20c5f-1bbe-4478-8a8c-0cd4e8b7275c -->
+---
+name: Fast Mode Implementation Specification
+overview: ""
+todos:
+  - id: 696b4091-3d4c-4f3b-a8ea-499720bd52a3
+    content: Create prompts/fast_mode.md with single-shot proofreading prompt
+    status: pending
+  - id: d7f05f70-7dff-40cb-b17b-1b37a7e4e86a
+    content: Add fastModeEnhance function and schema to src/libs/llm.ts
+    status: pending
+  - id: 20c4aa1c-d391-4f19-b80a-fb80cdd04551
+    content: Update src/libs/prompts.ts to load fast mode prompt
+    status: pending
+  - id: 96a2a8a5-33f8-453e-9761-aa64aa4d58f4
+    content: Create src/app/api/enhance/fast/route.ts endpoint
+    status: pending
+  - id: ffb1e1b0-ea29-4748-89cc-3330fd720915
+    content: Add Fast Mode toggle to TextAnalyzer component with localStorage persistence
+    status: pending
+  - id: ac044829-0e99-4196-9518-7053504f4e50
+    content: Implement mode-based API call switching in TextAnalyzer
+    status: pending
+  - id: e1ee21ca-2ff1-4f17-8e93-30845e369660
+    content: Add conditional rendering for fast mode vs classic mode results
+    status: pending
+  - id: 3c5c1de9-4a72-4b5b-a5d2-4ad9c1ec2122
+    content: Test both modes, edge cases, and mode switching behavior
+    status: pending
+---
+
 # Fast Mode Implementation Specification
 
 ## Overview
@@ -171,14 +200,3 @@ export type ApiResponse = EnhancedText | FastModeResponse;
 - `src/libs/llm.ts` (new function and schema)
 - `src/libs/prompts.ts` (load fast mode prompt)
 - `src/app/models/index.ts` (types, if needed)
-
-### To-dos
-
-- [ ] Create prompts/fast_mode.md with single-shot proofreading prompt
-- [ ] Add fastModeEnhance function and schema to src/libs/llm.ts
-- [ ] Update src/libs/prompts.ts to load fast mode prompt
-- [ ] Create src/app/api/enhance/fast/route.ts endpoint
-- [ ] Add Fast Mode toggle to TextAnalyzer component with localStorage persistence
-- [ ] Implement mode-based API call switching in TextAnalyzer
-- [ ] Add conditional rendering for fast mode vs classic mode results
-- [ ] Test both modes, edge cases, and mode switching behavior
