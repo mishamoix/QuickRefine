@@ -83,6 +83,7 @@ async function generateWithProvider<T>(
 
 	const result = await generateObject({
 		model,
+		output: 'object',
 		prompt: `${prompt}\n\nUser input: ${userInput}`,
 		schema,
 		temperature: 1,
@@ -93,8 +94,8 @@ async function generateWithProvider<T>(
 		traceGeneration.update({
 			output: result.object,
 			usage: {
-				input: result.usage?.promptTokens,
-				output: result.usage?.completionTokens,
+				input: result.usage?.inputTokens,
+				output: result.usage?.outputTokens,
 			},
 		});
 	}
@@ -102,8 +103,8 @@ async function generateWithProvider<T>(
 	return {
 		data: result.object,
 		usage: {
-			inputTokens: result.usage?.promptTokens,
-			outputTokens: result.usage?.completionTokens,
+			inputTokens: result.usage?.inputTokens,
+			outputTokens: result.usage?.outputTokens,
 		},
 	};
 }

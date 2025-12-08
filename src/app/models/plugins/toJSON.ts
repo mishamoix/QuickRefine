@@ -17,7 +17,8 @@ const deleteAtPath = (obj: any, path: string[], index: number) => {
 
 const toJSON = <T extends Document>(schema: Schema<T>) => {
 	schema.set('toJSON', {
-		transform: function (doc, ret) {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		transform: function (doc: any, ret: any) {
 			Object.keys(schema.paths).forEach((path) => {
 				if (schema.paths[path].options && schema.paths[path].options.private) {
 					deleteAtPath(ret, path.split('.'), 0);
