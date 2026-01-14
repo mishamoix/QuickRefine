@@ -7,7 +7,7 @@ export const LLM_PROVIDER = (process.env.LLM_PROVIDER || 'anthropic') as
 	| 'openrouter';
 export const OPENAI_MODEL = 'gpt-4.1-2025-04-14';
 export const ANTHROPIC_MODEL = 'claude-sonnet-4-5';
-export const OPENROUTER_MODEL = 'moonshotai/kimi-k2-0905';
+export const OPENROUTER_MODEL = 'openai/gpt-5.2-chat';
 
 export const MAX_CHARACTERS = 600;
 
