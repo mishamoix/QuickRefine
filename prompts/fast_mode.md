@@ -23,7 +23,7 @@ Structure:
    - Skip "More natural" if the original already sounds natural
    - Skip "More formal" if the original is already appropriately formal
    - Skip alternatives entirely if the text is already well-written and no meaningful improvement is possible
-   - **IMPORTANT**: Avoid using dashes (—, –, -) in alternatives unless they were present in the original text. Use commas, colons, or restructure sentences instead.
+   - **IMPORTANT**: Avoid using any dashes (— em dash, – en dash, - hyphen) in alternatives unless they were present in the original text. Use commas, colons, or restructure sentences instead.
 3. **Mistakes:** (if any - keep explanations SHORT and concise, 5-10 words max)
    "<error>" → "<corrected>": <brief explanation>
 
