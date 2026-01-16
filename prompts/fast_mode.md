@@ -41,5 +41,8 @@ Output: {"text":"**Corrected text:**\nwe already have a mechanism to correct typ
 Input: Let's grab coffee and discuss the project details
 Output: {"text":"✅ No mistakes, excellent"}
 
+Input: I wanted to inform you that the meeting has been moved
+Output: {"text":"✅ No mistakes, excellent\n\n**Alternatives:**\n** - More concise**: Just letting you know, the meeting has been moved\n** - More friendly**: Heads up, the meeting has been rescheduled"}
+
 Input: Привет
 Output: {"error":"I can't understand you 🥹"}
