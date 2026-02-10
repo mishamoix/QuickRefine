@@ -8,6 +8,7 @@ import {
 	ExclamationCircleIcon,
 	LanguageIcon,
 	ShieldExclamationIcon,
+	XMarkIcon,
 	XCircleIcon,
 	BoltIcon,
 } from '@heroicons/react/24/outline';
@@ -94,6 +95,11 @@ export default function TextAnalyzer() {
 		setCurrentText(e.target.value);
 	};
 
+	const handleClearText = () => {
+		setCurrentText('');
+		reset();
+	};
+
 	const sendRequestIfCan = () => {
 		if (!isLoggedIn) {
 			handleLogin();
@@ -165,12 +171,23 @@ export default function TextAnalyzer() {
 								onChange={handleTextChange}
 								onKeyDown={handleKeyDown}
 								placeholder='Write your text here. e.g. "I has went to the market yesterday, and buyed some apples and they was fresh."'
-								className={`w-full max-md:min-h-[25vh] max-sm:min-h-[20vh] min-h-40 text-base-content text-base border rounded-lg px-3 py-2 focus:outline-none focus:ring-1 ${
+								className={`w-full max-md:min-h-[25vh] max-sm:min-h-[20vh] min-h-40 text-base-content text-base border rounded-lg px-3 py-2 pr-6 focus:outline-none focus:ring-1 ${
 									isOverLimit
 										? 'border-error focus:border-error focus:ring-error'
 										: 'border-slate-200 focus:border-primary focus:ring-primary'
 								}`}
 							/>
+							{currentText && (
+								<button
+									type='button'
+									onClick={handleClearText}
+									className='absolute top-6 right-2 btn btn-ghost btn-xs btn-square'
+									title='Clear text'
+									aria-label='Clear text'
+								>
+									<XMarkIcon className='size-4 text-slate-500' />
+								</button>
+							)}
 							<div className='absolute -top-3 right-1'>
 								<p
 									className={`text-xs px-1 py-1 max-sm:py-2 rounded ${
@@ -228,7 +245,7 @@ export default function TextAnalyzer() {
 								dangerouslySetInnerHTML={{
 									__html: data.text.replace(
 										/\*\*(.*?)\*\*/g,
-										'<strong>$1</strong>'
+										'<strong>$1</strong>',
 									),
 								}}
 							/>
@@ -252,7 +269,7 @@ export default function TextAnalyzer() {
 									dangerouslySetInnerHTML={{
 										__html: data.text.replace(
 											/\*\*(.*?)\*\*/g,
-											'<strong>$1</strong>'
+											'<strong>$1</strong>',
 										),
 									}}
 								/>
