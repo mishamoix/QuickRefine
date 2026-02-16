@@ -268,7 +268,7 @@ export default function TextAnalyzer() {
 								<button
 									type='button'
 									onClick={handlePasteFromClipboard}
-									className='btn btn-secondary btn-square'
+									className='btn btn-ghost bg-gray-100 hover:bg-gray-200 btn-square'
 									title='Paste from clipboard'
 									aria-label='Paste from clipboard'
 								>
