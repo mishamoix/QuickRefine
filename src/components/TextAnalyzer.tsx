@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import {
 	BookOpenIcon,
 	CheckCircleIcon,
+	ClipboardDocumentIcon,
 	DocumentDuplicateIcon,
 	ExclamationCircleIcon,
 	LanguageIcon,
@@ -135,6 +136,48 @@ export default function TextAnalyzer() {
 		reset(); // Clear previous results
 	};
 
+	const handlePasteFromClipboard = async () => {
+		try {
+			// Request clipboard-read permission (works on Chromium, ignored on Safari/Firefox)
+			if (navigator.permissions && navigator.permissions.query) {
+				try {
+					const permissionStatus = await navigator.permissions.query({
+						name: 'clipboard-read' as PermissionName,
+					});
+					if (permissionStatus.state === 'denied') {
+						toast.error('Clipboard access denied. Please allow it in browser settings.', {
+							id: 'clipboard-denied',
+							duration: 3000,
+						});
+						return;
+					}
+				} catch {
+					// Safari/Firefox don't support clipboard-read permission query — proceed anyway
+				}
+			}
+
+			const clipboardText = await navigator.clipboard.readText();
+			if (clipboardText) {
+				setCurrentText(clipboardText);
+				reset();
+				toast.success('Text pasted from clipboard', {
+					id: 'paste-text',
+					duration: 2000,
+				});
+			} else {
+				toast.error('Clipboard is empty', {
+					id: 'clipboard-empty',
+					duration: 2000,
+				});
+			}
+		} catch {
+			toast.error('Failed to read clipboard. Please paste manually (Ctrl+V / ⌘+V).', {
+				id: 'clipboard-error',
+				duration: 3000,
+			});
+		}
+	};
+
 	return (
 		<div className='mt-20 max-md:mt-10'>
 			<div className='space-y-6'>
@@ -221,20 +264,31 @@ export default function TextAnalyzer() {
 									</>
 								)}
 							</p>
-							<button
-								type='submit'
-								className={`btn btn-primary ${
-									!isTextValid || isPending ? 'btn-disabled' : ''
-								}`}
-							>
-								{isPending || status === 'loading' ? (
-									<span className='loading loading-dots loading-sm'></span>
-								) : isLoggedIn ? (
-									'Analyze text'
-								) : (
-									'Sign In & Analyze'
-								)}
-							</button>
+							<div className='flex items-center gap-2'>
+								<button
+									type='button'
+									onClick={handlePasteFromClipboard}
+									className='btn btn-secondary btn-square'
+									title='Paste from clipboard'
+									aria-label='Paste from clipboard'
+								>
+									<ClipboardDocumentIcon className='size-5' />
+								</button>
+								<button
+									type='submit'
+									className={`btn btn-primary ${
+										!isTextValid || isPending ? 'btn-disabled' : ''
+									}`}
+								>
+									{isPending || status === 'loading' ? (
+										<span className='loading loading-dots loading-sm'></span>
+									) : isLoggedIn ? (
+										'Analyze text'
+									) : (
+										'Sign In & Analyze'
+									)}
+								</button>
+							</div>
 						</div>
 					</form>
 					{/* Fast Mode Results */}
