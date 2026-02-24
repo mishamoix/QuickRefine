@@ -11,7 +11,6 @@ import {
 	ShieldExclamationIcon,
 	XMarkIcon,
 	XCircleIcon,
-	BoltIcon,
 } from '@heroicons/react/24/outline';
 import { cleanText } from '@/libs';
 import { useMutation } from '@tanstack/react-query';
@@ -22,7 +21,7 @@ import { signIn, useSession } from 'next-auth/react';
 
 export default function TextAnalyzer() {
 	const [currentText, setCurrentText] = useState('');
-	const [isFastMode, setIsFastMode] = useState(false);
+	const [isFastMode, setIsFastMode] = useState(true);
 
 	const cleanedText = cleanText(currentText);
 	const characterCount = cleanedText.length;
@@ -181,30 +180,6 @@ export default function TextAnalyzer() {
 	return (
 		<div className='mt-20 max-md:mt-10'>
 			<div className='space-y-6'>
-				<div className='flex items-center justify-center'>
-					<div
-						className='flex items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200'
-						title='Uses more intelligent and fast model'
-					>
-						<BoltIcon
-							className={`size-6 ${
-								isFastMode ? 'text-purple-600' : 'text-slate-400'
-							}`}
-						/>
-						<label className='flex items-center gap-3 cursor-pointer'>
-							<div className='text-left'>
-								<div className='font-semibold text-slate-800'>Fast Mode</div>
-							</div>
-							<input
-								type='checkbox'
-								className='toggle toggle-lg toggle-primary'
-								checked={isFastMode}
-								onChange={handleModeToggle}
-								disabled={isPending}
-							/>
-						</label>
-					</div>
-				</div>
 				<div className='card'>
 					<form onSubmit={handleSubmit}>
 						<div className='relative pt-4'>
