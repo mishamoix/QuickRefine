@@ -8,9 +8,9 @@ const ContactButton: React.FC = () => {
 	return (
 		<a
 			href={`mailto:${SUPPORT_EMAIL}`}
-			className='fixed bottom-5 right-4 z-50 btn btn-neutral flex items-center gap-2 shadow-lg max-sm:btn-sm'
+			className='btn btn-primary fixed bottom-5 right-4 z-50 gap-2 rounded-full border-0 shadow-lg shadow-primary/25 ring-2 ring-base-100 max-sm:btn-sm'
 		>
-			<EnvelopeIcon className='size-6' aria-hidden='true' />
+			<EnvelopeIcon className='size-5 sm:size-6' aria-hidden='true' />
 			<span className='max-sm:hidden'>Contact</span>
 		</a>
 	);

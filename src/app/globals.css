@@ -3,14 +3,27 @@
 @tailwind utilities;
 
 :root {
-	--background: #ffffff;
-	--foreground: #171717;
+	--background: #faf8f5;
+	--foreground: #1c1917;
 }
 
 body {
 	color: var(--foreground);
 	background: var(--background);
-	font-family: Inter, Arial, Helvetica, sans-serif;
+	font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Atmospheric wash — sits behind content */
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(ellipse 120% 80% at 10% -10%, rgba(13, 92, 99, 0.09), transparent 50%),
+		radial-gradient(ellipse 90% 60% at 100% 20%, rgba(139, 90, 43, 0.06), transparent 45%),
+		var(--background);
 }
 
 @layer utilities {
@@ -43,13 +56,35 @@ body {
 	}
 
 	.info-text {
-		@apply text-lg leading-7 font-montserrat text-slate-gray;
+		@apply text-lg leading-7 text-base-content/70;
+	}
+
+	.animate-delay-100 {
+		animation-delay: 100ms;
+	}
+	.animate-delay-200 {
+		animation-delay: 200ms;
+	}
+	.animate-delay-300 {
+		animation-delay: 300ms;
 	}
 }
 
-/* Added new component style for card */
+@media (prefers-reduced-motion: reduce) {
+	.animate-fade-up,
+	.animate-fade-in {
+		animation: none !important;
+		opacity: 1 !important;
+		transform: none !important;
+	}
+}
+
 @layer components {
 	.card {
-		@apply px-6 py-4 border rounded-lg shadow-xl border-slate-100 shadow-slate-200 max-sm:px-3 max-sm:py-2;
+		@apply rounded-xl border border-base-300/80 bg-base-100/90 px-6 py-5 shadow-sm backdrop-blur-sm max-sm:px-4 max-sm:py-4;
+	}
+
+	.prose-panel {
+		@apply rounded-lg border border-base-300/90 bg-base-200/60 px-4 py-3 text-left text-base-content;
 	}
 }

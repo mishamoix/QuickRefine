@@ -13,8 +13,11 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
 					{children}
 
 					<Toaster
+						position='bottom-center'
 						toastOptions={{
 							duration: 3000,
+							className:
+								'!rounded-xl !border !border-base-300 !bg-base-100 !text-base-content !shadow-lg',
 						}}
 					/>
 				</QueryProvider>

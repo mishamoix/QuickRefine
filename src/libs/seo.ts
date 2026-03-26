@@ -17,10 +17,8 @@ export const getSEOTags = ({
 	};
 	extraTags?: Record<string, any>;
 } = {}) => {
-	const defaultImageUrl = `https://${config.domainName}/og-image.png`; // Add your default image URL here
-	const defaultIconUrl = `https://${config.domainName}/apple-touch-icon.png`; // Default iOS icon
-
 	return {
+		metadataBase: new URL(`https://${config.domainName}`),
 		title: title || config.appName,
 		description: description || config.appDescription,
 		keywords: keywords || [config.appName],
@@ -32,30 +30,24 @@ export const getSEOTags = ({
 			siteName: openGraph?.title || config.appName,
 			locale: 'en_US',
 			type: 'website',
-			images: [
-				{
-					url: defaultImageUrl,
-					alt: openGraph?.title || config.appName,
-				},
-			],
 		},
 		twitter: {
 			title: openGraph?.title || config.appName,
 			description: openGraph?.description || config.appDescription,
 			card: 'summary_large_image',
 			creator: '',
-			images: [defaultImageUrl],
 		},
-		icons: {
-			icon: [{ url: '/favicon.ico' }],
-			apple: [
-				{
-					url: iosIcon?.url || defaultIconUrl,
-					sizes: iosIcon?.sizes || '180x180',
-					type: 'image/png',
-				},
-			],
-		},
+		...(iosIcon && {
+			icons: {
+				apple: [
+					{
+						url: iosIcon.url,
+						sizes: iosIcon.sizes || '180x180',
+						type: 'image/png',
+					},
+				],
+			},
+		}),
 		// iOS specific meta tags
 		other: {
 			'apple-mobile-web-app-capable': 'yes',

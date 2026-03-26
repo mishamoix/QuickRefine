@@ -4,8 +4,37 @@ import Footer from '@/components/Footer';
 import { getSEOTags } from '@/libs/seo';
 import ClientLayout from '@/components/LayoutClient';
 import Script from 'next/script';
+import { DM_Sans, Fraunces } from 'next/font/google';
+import config from '@/config';
+
+const dmSans = DM_Sans({
+	subsets: ['latin'],
+	variable: '--font-sans',
+	display: 'swap',
+});
+
+const fraunces = Fraunces({
+	subsets: ['latin'],
+	variable: '--font-display',
+	display: 'swap',
+});
 
 export const metadata = getSEOTags();
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'SoftwareApplication',
+	name: 'QuickRefine',
+	applicationCategory: 'EducationalApplication',
+	operatingSystem: 'Web',
+	description: config.appDescription,
+	url: `https://${config.domainName}/`,
+	offers: {
+		'@type': 'Offer',
+		price: '0',
+		priceCurrency: 'USD',
+	},
+} as const;
 
 export default function RootLayout({
 	children,
@@ -13,18 +42,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang='en' data-theme='light' className='scroll-smooth'>
+		<html
+			lang='en'
+			data-theme='quickrefine'
+			className={`${dmSans.variable} ${fraunces.variable} scroll-smooth`}
+		>
 			<head>
-				<link rel='preconnect' href='https://fonts.googleapis.com' />
-				<link
-					rel='preconnect'
-					href='https://fonts.gstatic.com'
-					crossOrigin='anonymous'
-				/>
-				<link
-					href='https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap'
-					rel='stylesheet'
-				/>
 				<Script
 					defer
 					strategy='afterInteractive'
@@ -39,7 +62,11 @@ export default function RootLayout({
     `}
 				</Script>
 			</head>
-			<body className='flex flex-col min-h-screen font-sans antialiased'>
+			<body className='flex min-h-screen flex-col font-sans antialiased'>
+				<script
+					type='application/ld+json'
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+				/>
 				<ClientLayout>
 					<Navbar />
 				</ClientLayout>

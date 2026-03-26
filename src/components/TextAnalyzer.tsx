@@ -2,16 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-	BookOpenIcon,
-	CheckCircleIcon,
 	ClipboardDocumentIcon,
 	DocumentDuplicateIcon,
-	ExclamationCircleIcon,
 	LanguageIcon,
-	ShieldExclamationIcon,
 	XMarkIcon,
-	XCircleIcon,
-	BoltIcon,
 } from '@heroicons/react/24/outline';
 import { cleanText } from '@/libs';
 import { useMutation } from '@tanstack/react-query';
@@ -19,10 +13,13 @@ import { ApiResponse, EnhancedText } from '@/app/models';
 import { toast } from 'react-hot-toast';
 import config, { MAX_CHARACTERS } from '@/config';
 import { signIn, useSession } from 'next-auth/react';
+import { toFriendlyEnhanceError } from '@/libs/enhance-errors';
+
+const SAMPLE_TEXT =
+	'I has went to the market yesterday, and buyed some apples—they was fresh.';
 
 export default function TextAnalyzer() {
 	const [currentText, setCurrentText] = useState('');
-	const [isFastMode, setIsFastMode] = useState(false);
 
 	const cleanedText = cleanText(currentText);
 	const characterCount = cleanedText.length;
@@ -37,12 +34,6 @@ export default function TextAnalyzer() {
 			setCurrentText(savedText);
 			localStorage.removeItem('current_user_text');
 		}
-
-		// Restore Fast Mode preference
-		const savedMode = localStorage.getItem('text_analyzer_mode');
-		if (savedMode === 'fast') {
-			setIsFastMode(true);
-		}
 	}, []);
 
 	const { mutate, data, error, isPending, reset } = useMutation<
@@ -51,32 +42,40 @@ export default function TextAnalyzer() {
 		{ text: string }
 	>({
 		mutationFn: async ({ text }) => {
-			const endpoint = isFastMode ? '/api/enhance/fast' : '/api/enhance';
-			const response = await fetch(endpoint, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ text }),
-			});
+			let response: Response;
+			try {
+				response = await fetch('/api/enhance/fast', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ text }),
+				});
+			} catch {
+				throw new Error(
+					'Can’t reach the server. Check your connection and try again.',
+				);
+			}
 
-			const data: ApiResponse = await response.json();
-			console.log('data', data);
+			let data: ApiResponse;
+			try {
+				data = await response.json();
+			} catch {
+				throw new Error(toFriendlyEnhanceError(undefined, response.status));
+			}
 
-			if ('error' in data) {
-				throw new Error(data.error);
+			if ('error' in data && data.error) {
+				throw new Error(toFriendlyEnhanceError(data.error, response.status));
 			}
 
 			if (!response.ok) {
-				throw new Error('Failed to fetch data');
+				throw new Error(toFriendlyEnhanceError(undefined, response.status));
 			}
 
-			return data;
+			return data as EnhancedText;
 		},
 		retry: 0,
 	});
-
-	const hasMistakes = data?.mistakes && data?.mistakes.length > 0;
 
 	const isLoggedIn = status === 'authenticated' && session;
 
@@ -127,18 +126,13 @@ export default function TextAnalyzer() {
 		signIn('google', { callbackUrl: config.auth.callbackUrl });
 	};
 
-	const handleModeToggle = () => {
-		if (isPending) return; // Block toggle during pending request
-
-		const newMode = !isFastMode;
-		setIsFastMode(newMode);
-		localStorage.setItem('text_analyzer_mode', newMode ? 'fast' : 'classic');
-		reset(); // Clear previous results
+	const insertSampleText = () => {
+		setCurrentText(SAMPLE_TEXT);
+		reset();
 	};
 
 	const handlePasteFromClipboard = async () => {
 		try {
-			// Request clipboard-read permission (works on Chromium, ignored on Safari/Firefox)
 			if (navigator.permissions && navigator.permissions.query) {
 				try {
 					const permissionStatus = await navigator.permissions.query({
@@ -179,204 +173,142 @@ export default function TextAnalyzer() {
 	};
 
 	return (
-		<div className='mt-20 max-md:mt-10'>
-			<div className='space-y-6'>
-				<div className='flex items-center justify-center'>
-					<div
-						className='flex items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200'
-						title='Uses more intelligent and fast model'
-					>
-						<BoltIcon
-							className={`size-6 ${
-								isFastMode ? 'text-purple-600' : 'text-slate-400'
-							}`}
-						/>
-						<label className='flex items-center gap-3 cursor-pointer'>
-							<div className='text-left'>
-								<div className='font-semibold text-slate-800'>Fast Mode</div>
-							</div>
-							<input
-								type='checkbox'
-								className='toggle toggle-lg toggle-primary'
-								checked={isFastMode}
-								onChange={handleModeToggle}
-								disabled={isPending}
-							/>
-						</label>
-					</div>
-				</div>
-				<div className='card'>
-					<form onSubmit={handleSubmit}>
-						<div className='relative pt-4'>
+		<div className='mt-16 max-md:mt-12'>
+			<div className='space-y-8'>
+				<div className='card text-left'>
+					<form onSubmit={handleSubmit} className='space-y-4'>
+						<div className='flex items-end justify-between gap-3'>
+							<label htmlFor='draft-text' className='font-display text-lg font-semibold text-base-content'>
+								Your draft
+							</label>
+							<span
+								className={`tabular-nums text-xs font-medium ${
+									isOverLimit ? 'text-error' : 'text-base-content/45'
+								}`}
+								aria-live='polite'
+							>
+								{characterCount} / {MAX_CHARACTERS}
+							</span>
+						</div>
+						<div className='relative'>
 							<textarea
+								id='draft-text'
 								name='text'
 								value={currentText}
 								onChange={handleTextChange}
 								onKeyDown={handleKeyDown}
-								placeholder='Write your text here. e.g. "I has went to the market yesterday, and buyed some apples and they was fresh."'
-								className={`w-full max-md:min-h-[25vh] max-sm:min-h-[20vh] min-h-40 text-base-content text-base border rounded-lg px-3 py-2 pr-6 focus:outline-none focus:ring-1 ${
-									isOverLimit
-										? 'border-error focus:border-error focus:ring-error'
-										: 'border-slate-200 focus:border-primary focus:ring-primary'
+								placeholder='Paste or write here. Example: “I has went to the market yesterday, and buyed some apples—they was fresh.”'
+								rows={8}
+								className={`textarea textarea-bordered w-full resize-y rounded-xl border-base-300 bg-base-100 px-4 py-3 pr-12 font-sans text-base leading-relaxed text-base-content placeholder:text-base-content/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+									isOverLimit ? 'textarea-error border-error focus:ring-error/25' : ''
 								}`}
 							/>
-							{currentText && (
+							{currentText ? (
 								<button
 									type='button'
 									onClick={handleClearText}
-									className='absolute top-6 right-2 btn btn-ghost btn-xs btn-square'
+									className='btn btn-ghost btn-sm btn-square absolute right-2 top-2 text-base-content/50 hover:bg-base-200 hover:text-base-content'
 									title='Clear text'
 									aria-label='Clear text'
 								>
-									<XMarkIcon className='size-4 text-slate-500' />
+									<XMarkIcon className='size-5' />
 								</button>
-							)}
-							<div className='absolute -top-3 right-1'>
-								<p
-									className={`text-xs px-1 py-1 max-sm:py-2 rounded ${
-										isOverLimit ? 'text-error' : 'text-slate-300'
-									}`}
-								>
-									{characterCount}/{MAX_CHARACTERS}
-								</p>
-							</div>
+							) : null}
 						</div>
-						<div className='flex items-center justify-between gap-4 pt-4'>
-							{error && (
-								<div className='flex items-start gap-2'>
-									<LanguageIcon className='size-6 text-error' />
-									<span className='text-left text-error'>{error.message}</span>
-								</div>
-							)}
-							<p className='flex items-start gap-2 text-slate-800'>
-								{data && !isFastMode && (
-									<>
-										{hasMistakes ? (
-											<XCircleIcon className='size-6 text-error' />
-										) : (
-											<CheckCircleIcon className='text-green-500 size-6' />
-										)}
-										<span className='text-left'>
-											{hasMistakes
-												? 'Mistakes found'
-												: 'No mistakes, excellent!'}
-										</span>
-									</>
-								)}
+
+						{!hasAnyText ? (
+							<div className='rounded-xl border border-dashed border-base-300/90 bg-base-200/40 px-4 py-3 text-left'>
+								<p className='text-sm text-base-content/70'>
+									<span className='font-medium text-base-content'>Stuck?</span> Load a sample sentence to
+									try the tool.
+								</p>
+								<button
+									type='button'
+									onClick={insertSampleText}
+									className='btn btn-link h-auto min-h-0 px-0 font-normal text-primary'
+								>
+									Insert sample text
+								</button>
+							</div>
+						) : null}
+
+						{error ? (
+							<div
+								className='flex items-start gap-3 rounded-xl border border-error/30 bg-error/5 px-4 py-3 text-sm text-error'
+								role='alert'
+							>
+								<LanguageIcon className='size-5 shrink-0' aria-hidden />
+								<span>{error.message}</span>
+							</div>
+						) : null}
+
+						<div className='flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between'>
+							<p className='order-2 text-xs text-base-content/50 sm:order-1'>
+								<span className='font-medium text-base-content/70'>Tip:</span> Enter submits; Shift+Enter
+								for a new line.
 							</p>
-							<div className='flex items-center gap-2'>
+							<div className='order-1 flex flex-wrap items-center justify-end gap-2 sm:order-2'>
+								{data ? (
+									<button
+										type='button'
+										onClick={() => reset()}
+										className='btn btn-ghost rounded-lg text-base-content/70 hover:bg-base-200'
+									>
+										Clear results
+									</button>
+								) : null}
 								<button
 									type='button'
 									onClick={handlePasteFromClipboard}
-									className='btn btn-ghost bg-gray-100 hover:bg-gray-200 btn-square'
+									className='btn btn-ghost border border-base-300/80 bg-base-200/50 hover:bg-base-300/50'
 									title='Paste from clipboard'
 									aria-label='Paste from clipboard'
 								>
 									<ClipboardDocumentIcon className='size-5' />
+									<span className='hidden sm:inline'>Paste</span>
 								</button>
 								<button
 									type='submit'
-									className={`btn btn-primary ${
+									className={`btn btn-primary min-w-[10rem] rounded-xl px-6 ${
 										!isTextValid || isPending ? 'btn-disabled' : ''
 									}`}
+									disabled={!isTextValid || isPending}
 								>
 									{isPending || status === 'loading' ? (
-										<span className='loading loading-dots loading-sm'></span>
+										<span className='loading loading-dots loading-sm' />
 									) : isLoggedIn ? (
-										'Analyze text'
+										'Analyze'
 									) : (
-										'Sign In & Analyze'
+										'Sign in to analyze'
 									)}
 								</button>
 							</div>
 						</div>
 					</form>
-					{/* Fast Mode Results */}
-					{isFastMode && data && data.text && (
-						<div className='mt-4 p-4 text-left border border-slate-200 rounded-lg bg-slate-50 text-slate-800'>
+
+					{data?.text ? (
+						<div className='prose-panel relative mt-6 border-primary/15 bg-base-200/50 pr-12 sm:pr-24'>
+							<button
+								type='button'
+								onClick={() => copyText(data.text)}
+								className='btn btn-ghost btn-sm absolute right-2 top-2 gap-1 rounded-lg'
+								title='Copy revised text'
+							>
+								<DocumentDuplicateIcon className='size-4' />
+								<span className='hidden sm:inline'>Copy</span>
+							</button>
+							<p className='mb-2 text-xs font-semibold uppercase tracking-wider text-primary'>
+								Revised text
+							</p>
 							<div
-								className='whitespace-pre-wrap'
+								className='whitespace-pre-wrap font-sans text-base leading-relaxed'
 								dangerouslySetInnerHTML={{
-									__html: data.text.replace(
-										/\*\*(.*?)\*\*/g,
-										'<strong>$1</strong>',
-									),
+									__html: data.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'),
 								}}
 							/>
 						</div>
-					)}
-					{/* Classic Mode Results */}
-					{!isFastMode &&
-						data &&
-						data.mistakes &&
-						data.mistakes.length > 0 &&
-						data.text && (
-							<div className='relative py-2 pl-3 pr-20 mt-4 text-left border border-green-200 rounded text-slate-800 bg-green-50/70'>
-								<button
-									onClick={() => copyText(data.text)}
-									className='absolute top-1 right-1 btn btn-ghost btn-sm'
-									title='Copy Text'
-								>
-									<DocumentDuplicateIcon className='size-4 text-slate-800' />
-								</button>
-								<span
-									dangerouslySetInnerHTML={{
-										__html: data.text.replace(
-											/\*\*(.*?)\*\*/g,
-											'<strong>$1</strong>',
-										),
-									}}
-								/>
-							</div>
-						)}
+					) : null}
 				</div>
-				{!isFastMode && data && data.mistakes && data.mistakes.length > 0 && (
-					<div className='space-y-3 card'>
-						<p className='flex items-center gap-2 text-lg font-medium text-slate-800'>
-							<ExclamationCircleIcon className='size-6 text-error' />
-							Grammar Analysis
-						</p>
-						<div className='flex flex-col gap-4'>
-							{data.mistakes.map((mistake, idx) => (
-								<div
-									key={idx}
-									className='p-4 space-y-4 text-left border rounded-md shadow-[inset_0px_0px_8px_rgba(244,63,94,0.3)] border-rose-200 hover:shadow-[inset_0px_2px_4px_rgba(0,0,0,0)] transition-shadow duration-300'
-								>
-									<div>
-										<p className='flex items-center gap-2 mb-3 text-sm font-medium text-error'>
-											<ShieldExclamationIcon className='size-4 ' />
-											Mistake {idx + 1}:
-										</p>
-										<p className='text-base font-medium text-emerald-500'>
-											<span className='line-through text-error'>
-												{mistake.error}
-											</span>
-											{' →  '}
-											{mistake.corrected}
-										</p>
-										<p className='text-sm text-slate-500'>{mistake.rule}</p>
-									</div>
-									<div className='border-b border-rose-200 opacity-85' />
-									<div className=''>
-										<p className='flex items-center gap-2 mb-3 text-sm font-medium text-blue-600 '>
-											<BookOpenIcon className='size-4' />
-											Explanation:
-										</p>
-										<p className='block mb-1 text-sm text-blue-600'>
-											{mistake.explanation}
-										</p>
-										<p className='text-sm text-slate-500'>
-											<span className='font-medium text-slate-800'>
-												Example:
-											</span>{' '}
-											{mistake.example}
-										</p>
-									</div>
-								</div>
-							))}
-						</div>
-					</div>
-				)}
 			</div>
 		</div>
 	);

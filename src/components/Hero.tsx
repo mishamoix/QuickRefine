@@ -4,16 +4,23 @@ import React from 'react';
 
 export default function Hero() {
 	return (
-		<div className='mx-auto mt-20'>
-			<h1 className='pb-6 text-5xl font-extrabold tracking-tighter lg:text-6xl max-md:pb-3 text-slate-800 max-sm:text-3xl max-md:text-4xl'>
-				<span>Your </span>
-				<span className='text-primary'>AI </span>
-				<span>English </span>
-				<span className='text-primary'>Proofreader</span>
+		<div className='relative mx-auto mt-20 max-w-3xl'>
+			<p className='font-display text-sm font-medium uppercase tracking-[0.2em] text-primary opacity-90 motion-safe:animate-fade-up'>
+				Write with clarity
+			</p>
+			<h1 className='font-display mt-4 pb-5 text-5xl font-semibold leading-[1.08] tracking-tight text-base-content max-md:pb-4 max-md:text-4xl max-sm:text-[2rem] lg:text-6xl'>
+				<span className='inline-block motion-safe:animate-fade-up'>Your English,</span>{' '}
+				<span className='inline-block bg-gradient-to-r from-primary to-accent bg-clip-text font-semibold text-transparent motion-safe:animate-fade-up motion-safe:animate-delay-100'>
+					refined
+				</span>
+				<span className='inline-block motion-safe:animate-fade-up motion-safe:animate-delay-200'>
+					{' '}
+					and explained.
+				</span>
 			</h1>
-			<p className='max-w-2xl mx-auto text-xl leading-relaxed text-slate-500 max-md:text-base max-md:px-2'>
-				Instant AI analysis corrects grammar and punctuation, refines your
-				style, and explains every change to help you write better English.
+			<p className='mx-auto max-w-xl text-lg leading-relaxed text-base-content/65 motion-safe:animate-fade-up motion-safe:animate-delay-300 max-md:text-base'>
+				Instant analysis fixes grammar and punctuation, smooths tone, and shows
+				why each change matters—so you learn while you edit.
 			</p>
 		</div>
 	);

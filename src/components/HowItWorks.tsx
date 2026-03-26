@@ -3,22 +3,25 @@ import React from 'react';
 
 export default function HowItWorks() {
 	return (
-		<section className='text-center padding'>
-			<h2 className='mb-4 text-3xl font-bold text-slate-800'>How It Works</h2>
-			<p className='max-w-2xl mx-auto mb-6 text-lg text-slate-500'>
-				Learn how our tool analyzes your text and provides real-time feedback to
-				improve your writing.
-			</p>
-			<div className='max-w-4xl mx-auto'>
-				{/* Responsive video container */}
-				<div className='aspect-video'>
-					<iframe
-						src='https://www.youtube.com/embed/SCVaz8DoZQQ'
-						title='How It Works Video'
-						allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
-						allowFullScreen
-						className='w-full h-full rounded-lg shadow-md'
-					></iframe>
+		<section className='border-y border-base-300/60 bg-base-200/40 padding'>
+			<div className='mx-auto max-w-4xl text-center'>
+				<h2 className='font-display text-3xl font-semibold tracking-tight text-base-content md:text-4xl'>
+					How it works
+				</h2>
+				<p className='mx-auto mt-3 max-w-2xl text-lg text-base-content/65'>
+					See the flow: paste your draft, get structured feedback, and understand
+					each correction.
+				</p>
+				<div className='mt-10 overflow-hidden rounded-2xl border border-base-300/90 bg-base-100 shadow-lg shadow-base-300/40'>
+					<div className='aspect-video'>
+						<iframe
+							src='https://www.youtube.com/embed/SCVaz8DoZQQ'
+							title='How QuickRefine works'
+							allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+							allowFullScreen
+							className='h-full w-full'
+						/>
+					</div>
 				</div>
 			</div>
 		</section>

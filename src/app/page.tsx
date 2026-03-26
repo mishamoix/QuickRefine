@@ -8,7 +8,7 @@ import ClientLayout from '@/components/LayoutClient';
 export default function Home() {
 	return (
 		<>
-			<section className='max-w-3xl mx-auto text-center padding'>
+			<section className='mx-auto max-w-4xl px-4 text-center padding sm:px-6'>
 				<Hero />
 				<ClientLayout>
 					<TextAnalyzer />

@@ -6,33 +6,33 @@ const Footer: React.FC = () => {
 	const currentYear = new Date().getFullYear();
 
 	return (
-		<footer className='py-4 mt-auto border-t bg-base-200 text-base-content px-14 max-md:px-4'>
-			<div className='flex flex-col items-center justify-between gap-4 px-4 mx-auto sm:flex-row max-sm:text-center'>
-				<div>
-					<div className='text-lg font-bold text-slate-800'>QuickRefine</div>
-					<p className='text-sm text-slate-500'>
-						AI tool to improve your English
+		<footer className='mt-auto border-t border-base-300/80 bg-base-200/50 px-6 py-8 text-base-content backdrop-blur-sm sm:px-10 lg:px-14'>
+			<div className='mx-auto flex max-w-5xl flex-col items-center justify-between gap-6 sm:flex-row sm:items-start'>
+				<div className='text-center sm:text-left'>
+					<div className='font-display text-lg font-semibold'>QuickRefine</div>
+					<p className='mt-1 text-sm text-base-content/60'>
+						AI-assisted proofreading for clearer English
 					</p>
 				</div>
-				<div className='flex items-center gap-2 mt-2 sm:mt-0 max-md:flex-col max-md:gap-1 max-sm:flex-row'>
+				<div className='flex flex-wrap items-center justify-center gap-2'>
 					<a
 						href={GITHUB_URL}
-						className='flex items-center gap-1 btn btn-sm btn-ghost'
+						className='btn btn-ghost btn-sm gap-1.5 font-normal text-base-content/80 hover:bg-base-300/50'
 					>
 						<CodeBracketIcon className='size-5' />
 						GitHub
 					</a>
 					<a
 						href={`mailto:${SUPPORT_EMAIL}`}
-						className='flex items-center gap-1 btn btn-sm btn-ghost'
+						className='btn btn-ghost btn-sm gap-1.5 font-normal text-base-content/80 hover:bg-base-300/50'
 					>
 						<EnvelopeIcon className='size-5' />
 						Email
 					</a>
 				</div>
-				<div className='mt-2 text-sm sm:mt-0'>
-					© {currentYear} - All rights reserved
-				</div>
+				<p className='text-center text-sm text-base-content/50 sm:text-right'>
+					© {currentYear} QuickRefine
+				</p>
 			</div>
 		</footer>
 	);
