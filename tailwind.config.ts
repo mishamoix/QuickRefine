@@ -17,8 +17,8 @@ export default {
 				display: ['var(--font-display)', 'Georgia', 'serif'],
 			},
 			animation: {
-				'fade-up': 'fade-up 0.7s ease-out forwards',
-				'fade-in': 'fade-in 0.5s ease-out forwards',
+				'fade-up': 'fade-up 0.7s ease-out both',
+				'fade-in': 'fade-in 0.5s ease-out both',
 			},
 			keyframes: {
 				'fade-up': {

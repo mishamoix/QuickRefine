@@ -16,8 +16,7 @@ export function OpenGraphImageContent() {
 				padding: '56px 64px',
 				background:
 					'radial-gradient(ellipse 90% 70% at 12% 8%, rgba(13, 92, 99, 0.14), transparent 52%), radial-gradient(ellipse 70% 50% at 92% 88%, rgba(139, 90, 43, 0.1), transparent 45%), linear-gradient(165deg, #faf8f5 0%, #f0ebe3 48%, #e8dfd2 100%)',
-				fontFamily:
-					'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
+				fontFamily: 'DM Sans',
 			}}
 		>
 			<div
@@ -82,8 +81,8 @@ export function OpenGraphImageContent() {
 							letterSpacing: '-0.03em',
 						}}
 					>
-						<span>Your English, </span>
-						<span style={{ color: '#0d5c63' }}>refined</span>
+						<span>Your English,</span>
+						<span style={{ color: '#0d5c63' }}> refined</span>
 					</div>
 					<div
 						style={{
