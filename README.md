@@ -48,7 +48,7 @@ The app centers on a **Your draft** editor (up to 600 characters), **How it work
 ### Setup
 
 ```bash
-git clone <your-fork-or-repo-url>
+git clone https://github.com/mishamoix/QuickRefine
 cd fix_english
 npm install
 cp .env.example .env
