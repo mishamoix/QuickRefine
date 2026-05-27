@@ -15,9 +15,6 @@ import config, { MAX_CHARACTERS } from '@/config';
 import { signIn, useSession } from 'next-auth/react';
 import { toFriendlyEnhanceError } from '@/libs/enhance-errors';
 
-const SAMPLE_TEXT =
-	'I has went to the market yesterday, and buyed some apples—they was fresh.';
-
 export default function TextAnalyzer() {
 	const [currentText, setCurrentText] = useState('');
 
@@ -126,11 +123,6 @@ export default function TextAnalyzer() {
 		signIn('google', { callbackUrl: config.auth.callbackUrl });
 	};
 
-	const insertSampleText = () => {
-		setCurrentText(SAMPLE_TEXT);
-		reset();
-	};
-
 	const handlePasteFromClipboard = async () => {
 		try {
 			if (navigator.permissions && navigator.permissions.query) {
@@ -173,7 +165,7 @@ export default function TextAnalyzer() {
 	};
 
 	return (
-		<div className='mt-16 max-md:mt-12'>
+		<div className='mt-16 max-md:mt-10 max-sm:mt-4'>
 			<div className='space-y-8'>
 				<div className='card text-left'>
 					<form onSubmit={handleSubmit} className='space-y-4'>
@@ -198,8 +190,8 @@ export default function TextAnalyzer() {
 								onChange={handleTextChange}
 								onKeyDown={handleKeyDown}
 								placeholder='Paste or write here. Example: “I has went to the market yesterday, and buyed some apples—they was fresh.”'
-								rows={8}
-								className={`textarea textarea-bordered w-full resize-y rounded-xl border-base-300 bg-base-100 px-4 py-3 pr-12 font-sans text-base leading-relaxed text-base-content placeholder:text-base-content/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+								rows={4}
+								className={`textarea textarea-bordered w-full resize-y rounded-xl border-base-300 bg-base-100 px-4 py-3 pr-12 font-sans text-base leading-relaxed text-base-content placeholder:text-base-content/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:min-h-[13rem] ${
 									isOverLimit ? 'textarea-error border-error focus:ring-error/25' : ''
 								}`}
 							/>
@@ -215,22 +207,6 @@ export default function TextAnalyzer() {
 								</button>
 							) : null}
 						</div>
-
-						{!hasAnyText ? (
-							<div className='rounded-xl border border-dashed border-base-300/90 bg-base-200/40 px-4 py-3 text-left'>
-								<p className='text-sm text-base-content/70'>
-									<span className='font-medium text-base-content'>Stuck?</span> Load a sample sentence to
-									try the tool.
-								</p>
-								<button
-									type='button'
-									onClick={insertSampleText}
-									className='btn btn-link h-auto min-h-0 px-0 font-normal text-primary'
-								>
-									Insert sample text
-								</button>
-							</div>
-						) : null}
 
 						{error ? (
 							<div
