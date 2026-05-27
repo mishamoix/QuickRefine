@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function Hero() {
 	return (
-		<div className='relative mx-auto mt-20 max-w-3xl'>
+		<div className='relative mx-auto mt-20 max-w-3xl max-sm:mt-8'>
 			<p className='font-display text-sm font-medium uppercase tracking-[0.2em] text-primary opacity-90 motion-safe:animate-fade-up'>
 				Write with clarity
 			</p>
