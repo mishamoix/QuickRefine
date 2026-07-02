@@ -10,9 +10,11 @@ import {
 } from '@/config';
 
 // Response schemas
+// Strict structured outputs (OpenAI responses API) require every property to
+// be present in `required`, so optional fields must be nullable instead.
 const fixTextSchema = z.object({
-	text: z.string().optional(),
-	error: z.string().optional(),
+	text: z.string().nullable(),
+	error: z.string().nullable(),
 });
 
 const explainSchema = z.object({
@@ -30,7 +32,7 @@ const explainSchema = z.object({
 
 const fastModeSchema = z.object({
 	text: z.string(),
-	error: z.string().optional(),
+	error: z.string().nullable(),
 });
 
 export interface LLMUsage {
