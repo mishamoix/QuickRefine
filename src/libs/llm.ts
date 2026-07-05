@@ -10,11 +10,9 @@ import {
 } from '@/config';
 
 // Response schemas
-// Strict structured outputs (OpenAI responses API) require every property to
-// be present in `required`, so optional fields must be nullable instead.
 const fixTextSchema = z.object({
-	text: z.string().nullable(),
-	error: z.string().nullable(),
+	text: z.string().optional(),
+	error: z.string().optional(),
 });
 
 const explainSchema = z.object({
@@ -31,8 +29,8 @@ const explainSchema = z.object({
 });
 
 const fastModeSchema = z.object({
-	text: z.string(),
-	error: z.string().nullable(),
+	text: z.string().optional(),
+	error: z.string().optional(),
 });
 
 export interface LLMUsage {
@@ -75,7 +73,12 @@ async function generateWithProvider<T>(
 			model = openai(OPENAI_MODEL);
 			break;
 		case 'openrouter':
-			model = openrouter(OPENROUTER_MODEL);
+			// OpenRouter reliably supports the Chat Completions API; the newer
+			// Responses API (the @ai-sdk/openai v4 default) is not consistently
+			// supported by every model routed through it, and combined with
+			// strict JSON-schema structured outputs was causing some models to
+			// degenerate into runaway repetition instead of closing the JSON.
+			model = openrouter.chat(OPENROUTER_MODEL);
 			break;
 		case 'anthropic':
 		default:
@@ -89,6 +92,14 @@ async function generateWithProvider<T>(
 		prompt: `${prompt}\n\nUser input: ${userInput}`,
 		schema,
 		temperature: 1,
+		providerOptions: {
+			openai: {
+				// Strict grammar-constrained JSON decoding made some models
+				// degenerate into runaway repetition on large free-text fields
+				// instead of closing the JSON (see llm.ts history).
+				strictJsonSchema: false,
+			},
+		},
 	});
 
 	// Update trace if provided
