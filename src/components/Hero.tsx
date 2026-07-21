@@ -5,12 +5,12 @@ import React from 'react';
 export default function Hero() {
 	return (
 		<div className='relative mx-auto mt-20 max-w-3xl max-sm:mt-8'>
-			<p className='font-display text-sm font-medium uppercase tracking-[0.2em] text-primary opacity-90 motion-safe:animate-fade-up'>
+			<p className='font-sans text-sm font-medium uppercase tracking-[0.2em] text-primary opacity-90 motion-safe:animate-fade-up'>
 				Write with clarity
 			</p>
 			<h1 className='font-display mt-4 pb-5 text-5xl font-semibold leading-[1.08] tracking-tight text-base-content max-md:pb-4 max-md:text-4xl max-sm:text-[2rem] lg:text-6xl'>
 				<span className='inline-block motion-safe:animate-fade-up'>Your English,</span>{' '}
-				<span className='inline-block bg-gradient-to-r from-primary to-accent bg-clip-text font-semibold text-transparent motion-safe:animate-fade-up motion-safe:animate-delay-100'>
+				<span className='inline-block font-semibold italic text-primary motion-safe:animate-fade-up motion-safe:animate-delay-100'>
 					refined
 				</span>
 				<span className='inline-block motion-safe:animate-fade-up motion-safe:animate-delay-200'>

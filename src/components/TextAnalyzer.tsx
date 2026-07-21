@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	ClipboardDocumentIcon,
 	DocumentDuplicateIcon,
@@ -13,10 +13,33 @@ import { ApiResponse, EnhancedText } from '@/app/models';
 import { toast } from 'react-hot-toast';
 import config, { MAX_CHARACTERS } from '@/config';
 import { signIn, useSession } from 'next-auth/react';
-import { toFriendlyEnhanceError } from '@/libs/enhance-errors';
+import { isAuthEnhanceError, toFriendlyEnhanceError } from '@/libs/enhance-errors';
+import { parseFastResult, stripBoldMarkers } from '@/libs/parse-fast-result';
+
+const DRAFT_STORAGE_KEY = 'current_user_text';
+// Cap stored drafts at the product limit plus slack, so localStorage never balloons.
+const DRAFT_MAX_STORED_LENGTH = MAX_CHARACTERS * 2;
+
+/**
+ * Renders `**bold**` markers as <strong> elements. Everything stays plain
+ * React text nodes, so LLM output can never inject markup.
+ */
+function BoldText({ text }: { text: string }) {
+	const parts = text.split('**');
+	return (
+		<>
+			{parts.map((part, i) =>
+				i % 2 === 1 ? <strong key={i}>{part}</strong> : <React.Fragment key={i}>{part}</React.Fragment>,
+			)}
+		</>
+	);
+}
 
 export default function TextAnalyzer() {
 	const [currentText, setCurrentText] = useState('');
+	const [limitAnnouncement, setLimitAnnouncement] = useState('');
+	const lastSubmittedTextRef = useRef('');
+	const wasOverLimitRef = useRef(false);
 
 	const cleanedText = cleanText(currentText);
 	const characterCount = cleanedText.length;
@@ -25,13 +48,42 @@ export default function TextAnalyzer() {
 	const isTextValid = hasAnyText && !isOverLimit;
 	const { data: session, status } = useSession();
 
+	// Restore the draft on mount. The key is kept (not removed) so a reload
+	// mid-draft doesn't lose text; the debounced saver below keeps it in sync.
 	useEffect(() => {
-		const savedText = localStorage.getItem('current_user_text');
+		const savedText = localStorage.getItem(DRAFT_STORAGE_KEY);
 		if (savedText) {
 			setCurrentText(savedText);
-			localStorage.removeItem('current_user_text');
 		}
 	}, []);
+
+	// Persist the draft (debounced) as the user types.
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			if (currentText) {
+				localStorage.setItem(
+					DRAFT_STORAGE_KEY,
+					currentText.slice(0, DRAFT_MAX_STORED_LENGTH),
+				);
+			} else {
+				localStorage.removeItem(DRAFT_STORAGE_KEY);
+			}
+		}, 500);
+		return () => clearTimeout(timer);
+	}, [currentText]);
+
+	// Announce only when the draft crosses the limit (or comes back under it) —
+	// a live region on the counter itself would chatter on every keystroke.
+	useEffect(() => {
+		if (isOverLimit && !wasOverLimitRef.current) {
+			setLimitAnnouncement(
+				`Your text is over the ${MAX_CHARACTERS} character limit.`,
+			);
+		} else if (!isOverLimit && wasOverLimitRef.current) {
+			setLimitAnnouncement('Your text is under the limit again.');
+		}
+		wasOverLimitRef.current = isOverLimit;
+	}, [isOverLimit]);
 
 	const { mutate, data, error, isPending, reset } = useMutation<
 		EnhancedText,
@@ -75,16 +127,26 @@ export default function TextAnalyzer() {
 	});
 
 	const isLoggedIn = status === 'authenticated' && session;
+	const parsed = data?.text ? parseFastResult(data.text) : null;
 
+	// Only the explicit submit button may start the sign-in redirect.
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		sendRequestIfCan();
+		if (!isLoggedIn) {
+			handleLogin();
+			return;
+		}
+		runAnalysis();
 	};
 
+	// Plain Enter inserts a newline. Cmd/Ctrl+Enter submits — and never
+	// triggers the sign-in redirect from a keystroke.
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === 'Enter' && !e.shiftKey) {
+		if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
 			e.preventDefault();
-			sendRequestIfCan();
+			if (isLoggedIn) {
+				runAnalysis();
+			}
 		}
 	};
 
@@ -97,20 +159,23 @@ export default function TextAnalyzer() {
 		reset();
 	};
 
-	const sendRequestIfCan = () => {
-		if (!isLoggedIn) {
-			handleLogin();
-			return;
-		}
-
+	const runAnalysis = () => {
 		if (isTextValid && !isPending) {
+			lastSubmittedTextRef.current = currentText;
 			mutate({ text: currentText });
+		}
+	};
+
+	const handleRetry = () => {
+		const lastText = lastSubmittedTextRef.current;
+		if (lastText && !isPending) {
+			mutate({ text: lastText });
 		}
 	};
 
 	const copyText = (text?: string) => {
 		if (text) {
-			navigator.clipboard.writeText(text.replace(/\*\*(.*?)\*\*/g, '$1'));
+			navigator.clipboard.writeText(stripBoldMarkers(text));
 			toast.success('Text copied to clipboard', {
 				id: 'copy-text',
 				duration: 2000,
@@ -119,7 +184,10 @@ export default function TextAnalyzer() {
 	};
 
 	const handleLogin = () => {
-		localStorage.setItem('current_user_text', currentText);
+		localStorage.setItem(
+			DRAFT_STORAGE_KEY,
+			currentText.slice(0, DRAFT_MAX_STORED_LENGTH),
+		);
 		signIn('google', { callbackUrl: config.auth.callbackUrl });
 	};
 
@@ -177,9 +245,11 @@ export default function TextAnalyzer() {
 								className={`tabular-nums text-xs font-medium ${
 									isOverLimit ? 'text-error' : 'text-base-content/45'
 								}`}
-								aria-live='polite'
 							>
 								{characterCount} / {MAX_CHARACTERS}
+							</span>
+							<span className='sr-only' aria-live='polite'>
+								{limitAnnouncement}
 							</span>
 						</div>
 						<div className='relative'>
@@ -214,14 +284,31 @@ export default function TextAnalyzer() {
 								role='alert'
 							>
 								<LanguageIcon className='size-5 shrink-0' aria-hidden />
-								<span>{error.message}</span>
+								<span className='flex-1 self-center'>{error.message}</span>
+								{isAuthEnhanceError(error.message) ? (
+									<button
+										type='button'
+										onClick={handleLogin}
+										className='btn btn-ghost btn-sm -my-1 shrink-0 rounded-lg text-primary hover:bg-primary/10'
+									>
+										Sign in
+									</button>
+								) : (
+									<button
+										type='button'
+										onClick={handleRetry}
+										className='btn btn-ghost btn-sm -my-1 shrink-0 rounded-lg text-primary hover:bg-primary/10'
+									>
+										Try again
+									</button>
+								)}
 							</div>
 						) : null}
 
 						<div className='flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between'>
-							<p className='order-2 text-xs text-base-content/50 sm:order-1'>
-								<span className='font-medium text-base-content/70'>Tip:</span> Enter submits; Shift+Enter
-								for a new line.
+							<p className='order-2 text-xs text-base-content/70 sm:order-1'>
+								<span className='font-medium'>Tip:</span> Press ⌘+Enter (Ctrl+Enter) to check your
+								text.
 							</p>
 							<div className='order-1 flex flex-wrap items-center justify-end gap-2 sm:order-2'>
 								{data ? (
@@ -250,8 +337,11 @@ export default function TextAnalyzer() {
 									}`}
 									disabled={!isTextValid || isPending}
 								>
-									{isPending || status === 'loading' ? (
-										<span className='loading loading-dots loading-sm' />
+									{isPending ? (
+										<>
+											<span className='loading loading-dots loading-sm' aria-hidden />
+											<span className='sr-only'>Checking your text…</span>
+										</>
 									) : isLoggedIn ? (
 										'Analyze'
 									) : (
@@ -262,28 +352,118 @@ export default function TextAnalyzer() {
 						</div>
 					</form>
 
-					{data?.text ? (
-						<div className='prose-panel relative mt-6 border-primary/15 bg-base-200/50 pr-12 sm:pr-24'>
-							<button
-								type='button'
-								onClick={() => copyText(data.text)}
-								className='btn btn-ghost btn-sm absolute right-2 top-2 gap-1 rounded-lg'
-								title='Copy revised text'
-							>
-								<DocumentDuplicateIcon className='size-4' />
-								<span className='hidden sm:inline'>Copy</span>
-							</button>
-							<p className='mb-2 text-xs font-semibold uppercase tracking-wider text-primary'>
-								Revised text
-							</p>
-							<div
-								className='whitespace-pre-wrap font-sans text-base leading-relaxed'
-								dangerouslySetInnerHTML={{
-									__html: data.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'),
-								}}
-							/>
-						</div>
-					) : null}
+					<div aria-live='polite'>
+						{parsed ? (
+							<div className='mt-6 space-y-5 text-left'>
+								<span className='sr-only'>
+									{parsed.ok && parsed.noMistakes
+										? 'Result is ready. No mistakes found.'
+										: 'Revised text is ready.'}
+								</span>
+
+								{parsed.ok && parsed.noMistakes ? (
+									<div className='rounded-xl border border-success/30 bg-success/5 px-4 py-3'>
+										<p className='font-medium text-success'>
+											{parsed.noMistakesText || '✅ No mistakes, excellent'}
+										</p>
+										<p className='mt-1 text-sm leading-relaxed text-base-content/70'>
+											Your text is already correct. It is ready to send.
+										</p>
+									</div>
+								) : (
+									<div className='prose-panel relative border-primary/15 bg-base-200/50 pr-12 sm:pr-24'>
+										<button
+											type='button'
+											onClick={() =>
+												copyText(parsed.ok ? parsed.corrected ?? undefined : parsed.raw)
+											}
+											className='btn btn-ghost btn-sm absolute right-2 top-2 gap-1 rounded-lg'
+											title='Copy revised text'
+											aria-label='Copy revised text'
+										>
+											<DocumentDuplicateIcon className='size-4' />
+											<span className='hidden sm:inline' aria-hidden>
+												Copy
+											</span>
+										</button>
+										<p className='mb-2 text-xs font-semibold uppercase tracking-wider text-primary'>
+											Revised text
+										</p>
+										<p className='whitespace-pre-wrap font-sans text-base leading-relaxed'>
+											<BoldText text={parsed.ok ? parsed.corrected ?? '' : parsed.raw} />
+										</p>
+										{parsed.ok ? (
+											<p className='mt-2 text-sm text-base-content/65'>
+												Bold text shows what changed.
+											</p>
+										) : null}
+									</div>
+								)}
+
+								{parsed.ok && parsed.mistakes.length > 0 ? (
+									<div>
+										<p className='font-display text-base font-semibold text-base-content'>
+											Why it changed
+										</p>
+										<div className='mt-2 space-y-3'>
+											{parsed.mistakes.map((mistake, i) => (
+												<div
+													key={i}
+													className='rounded-lg border border-base-300/80 bg-base-200/40 px-4 py-3'
+												>
+													<p className='text-sm leading-relaxed text-base-content/80'>
+														<span className='text-base-content/60'>{mistake.from}</span>
+														<span aria-hidden='true'>{' → '}</span>
+														<span className='sr-only'> changed to </span>
+														<strong className='font-semibold text-base-content'>
+															{mistake.to}
+														</strong>
+														{'. '}
+														{mistake.explanation}
+													</p>
+												</div>
+											))}
+										</div>
+									</div>
+								) : null}
+
+								{parsed.ok && parsed.alternatives.length > 0 ? (
+									<div>
+										<p className='font-display text-base font-semibold text-base-content'>
+											Alternatives
+										</p>
+										<p className='mt-1 text-sm text-base-content/65'>
+											Other ways to say it. Copy the one you like.
+										</p>
+										<div className='mt-2 space-y-3'>
+											{parsed.alternatives.map((alternative, i) => (
+												<div
+													key={i}
+													className='flex items-start justify-between gap-3 rounded-lg border border-base-300/80 bg-base-200/40 px-4 py-3'
+												>
+													<p className='text-sm leading-relaxed text-base-content/80'>
+														<span className='font-medium text-base-content'>
+															{alternative.type}:
+														</span>{' '}
+														<BoldText text={alternative.text} />
+													</p>
+													<button
+														type='button'
+														onClick={() => copyText(alternative.text)}
+														className='btn btn-ghost btn-sm btn-square -my-1 shrink-0 rounded-lg text-base-content/60 hover:bg-base-300/60 hover:text-base-content'
+														title={`Copy the "${alternative.type}" version`}
+														aria-label={`Copy the "${alternative.type}" version`}
+													>
+														<DocumentDuplicateIcon className='size-4' />
+													</button>
+												</div>
+											))}
+										</div>
+									</div>
+								) : null}
+							</div>
+						) : null}
+					</div>
 				</div>
 			</div>
 		</div>

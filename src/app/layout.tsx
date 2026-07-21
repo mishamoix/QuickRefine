@@ -47,7 +47,11 @@ export default function RootLayout({
 			data-theme='quickrefine'
 			className={`${dmSans.variable} ${fraunces.variable} scroll-smooth`}
 		>
-			<head>
+			<body className='flex min-h-screen flex-col font-sans antialiased'>
+				<script
+					type='application/ld+json'
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+				/>
 				<Script
 					defer
 					strategy='afterInteractive'
@@ -56,22 +60,15 @@ export default function RootLayout({
 				/>
 				<Script id='plausible-init' strategy='afterInteractive'>
 					{`
-      window.plausible = window.plausible || function() { 
-        (window.plausible.q = window.plausible.q || []).push(arguments) 
+      window.plausible = window.plausible || function() {
+        (window.plausible.q = window.plausible.q || []).push(arguments)
       }
     `}
 				</Script>
-			</head>
-			<body className='flex min-h-screen flex-col font-sans antialiased'>
-				<script
-					type='application/ld+json'
-					dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-				/>
 				<ClientLayout>
 					<Navbar />
+					<main className='flex-grow'>{children}</main>
 				</ClientLayout>
-
-				<main className='flex-grow'>{children}</main>
 				<Footer />
 			</body>
 		</html>

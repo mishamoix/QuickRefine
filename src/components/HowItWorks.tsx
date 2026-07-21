@@ -9,10 +9,10 @@ export default function HowItWorks() {
 					How it works
 				</h2>
 				<p className='mx-auto mt-3 max-w-2xl text-lg text-base-content/65'>
-					See the flow: paste your draft, get structured feedback, and understand
-					each correction.
+					Watch a short video: paste your draft, get the corrected text with
+					alternative versions, and read the reason for each change.
 				</p>
-				<div className='mt-10 overflow-hidden rounded-2xl border border-base-300/90 bg-base-100 shadow-lg shadow-base-300/40'>
+				<div className='mt-10 overflow-hidden rounded-2xl border border-base-300/90 bg-base-100 shadow-sm'>
 					<div className='aspect-video'>
 						<iframe
 							src='https://www.youtube.com/embed/SCVaz8DoZQQ'

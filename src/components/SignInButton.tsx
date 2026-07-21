@@ -9,7 +9,10 @@ const SignInButton = () => {
 	};
 
 	return (
-		<button className='btn btn-primary btn-sm' onClick={handleClick}>
+		<button
+			className='btn btn-ghost btn-sm font-medium text-base-content/70 hover:bg-base-200'
+			onClick={handleClick}
+		>
 			Sign In
 		</button>
 	);
