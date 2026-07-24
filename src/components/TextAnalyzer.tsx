@@ -129,9 +129,9 @@ export default function TextAnalyzer() {
 	const isLoggedIn = status === 'authenticated' && session;
 	const parsed = data?.text ? parseFastResult(data.text) : null;
 
-	// Only the explicit submit button may start the sign-in redirect.
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+	// Shared by the submit button and the Enter shortcut: sign logged-out
+	// users in, otherwise run the analysis.
+	const submitDraft = () => {
 		if (!isLoggedIn) {
 			handleLogin();
 			return;
@@ -139,14 +139,17 @@ export default function TextAnalyzer() {
 		runAnalysis();
 	};
 
-	// Plain Enter inserts a newline. Cmd/Ctrl+Enter submits — and never
-	// triggers the sign-in redirect from a keystroke.
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		submitDraft();
+	};
+
+	// Enter submits; Shift+Enter inserts a new line. Skip Enter while an IME
+	// composition is active so it doesn't submit text mid-composition.
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+		if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
 			e.preventDefault();
-			if (isLoggedIn) {
-				runAnalysis();
-			}
+			submitDraft();
 		}
 	};
 
@@ -307,8 +310,8 @@ export default function TextAnalyzer() {
 
 						<div className='flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between'>
 							<p className='order-2 text-xs text-base-content/70 sm:order-1'>
-								<span className='font-medium'>Tip:</span> Press ⌘+Enter (Ctrl+Enter) to check your
-								text.
+								<span className='font-medium'>Tip:</span> Enter submits; Shift+Enter for a new
+								line.
 							</p>
 							<div className='order-1 flex flex-wrap items-center justify-end gap-2 sm:order-2'>
 								{data ? (
