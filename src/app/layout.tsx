@@ -4,17 +4,18 @@ import Footer from '@/components/Footer';
 import { getSEOTags } from '@/libs/seo';
 import ClientLayout from '@/components/LayoutClient';
 import Script from 'next/script';
-import { DM_Sans, Fraunces } from 'next/font/google';
+import { Archivo_Black, Space_Grotesk } from 'next/font/google';
 import config from '@/config';
 
-const dmSans = DM_Sans({
+const spaceGrotesk = Space_Grotesk({
 	subsets: ['latin'],
 	variable: '--font-sans',
 	display: 'swap',
 });
 
-const fraunces = Fraunces({
+const archivoBlack = Archivo_Black({
 	subsets: ['latin'],
+	weight: '400',
 	variable: '--font-display',
 	display: 'swap',
 });
@@ -45,7 +46,7 @@ export default function RootLayout({
 		<html
 			lang='en'
 			data-theme='quickrefine'
-			className={`${dmSans.variable} ${fraunces.variable} scroll-smooth`}
+			className={`${spaceGrotesk.variable} ${archivoBlack.variable} scroll-smooth`}
 		>
 			<body className='flex min-h-screen flex-col font-sans antialiased'>
 				<script

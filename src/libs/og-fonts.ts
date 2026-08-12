@@ -1,35 +1,33 @@
-/**
- * Satori (next/og ImageResponse) does not use OS fonts — embed font bytes via the `fonts` option.
- * WOFF2 is not supported (`Unsupported OpenType signature wOF2`); Google serves WOFF for legacy UAs.
- */
+/** Satori requires embedded font bytes; Google serves compatible WOFF to this legacy UA. */
 const GOOGLE_FONTS_WOFF_UA =
 	'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)';
 
-export async function fetchGoogleFontForOg(
+async function fetchGoogleFontForOg(
 	family: string,
 	weight: number,
 ): Promise<ArrayBuffer> {
 	const cssUrl = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&display=swap`;
-	const css = await fetch(cssUrl, { headers: { 'User-Agent': GOOGLE_FONTS_WOFF_UA } }).then((r) => {
-		if (!r.ok) throw new Error(`Font CSS ${r.status}: ${family} ${weight}`);
-		return r.text();
+	const css = await fetch(cssUrl, {
+		headers: { 'User-Agent': GOOGLE_FONTS_WOFF_UA },
+	}).then((response) => {
+		if (!response.ok) throw new Error(`Font CSS ${response.status}: ${family} ${weight}`);
+		return response.text();
 	});
-	const urlMatch = css.match(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/);
-	if (!urlMatch) throw new Error(`No font URL in CSS for ${family} ${weight}`);
-	return fetch(urlMatch[1]).then((r) => {
-		if (!r.ok) throw new Error(`Font file ${r.status}: ${family} ${weight}`);
-		return r.arrayBuffer();
+	const url = css.match(/url\((https:\/\/fonts\.gstatic\.com\/[^)]+)\)/)?.[1];
+	if (!url) throw new Error(`No font URL in CSS for ${family} ${weight}`);
+	return fetch(url).then((response) => {
+		if (!response.ok) throw new Error(`Font file ${response.status}: ${family} ${weight}`);
+		return response.arrayBuffer();
 	});
 }
 
-/** DM Sans 600/700 for `next/og` — matches layout `DM_Sans` usage. */
-export async function getDmSansOgFonts() {
-	const [dmSans600, dmSans700] = await Promise.all([
-		fetchGoogleFontForOg('DM Sans', 600),
-		fetchGoogleFontForOg('DM Sans', 700),
+export async function getQuickRefineOgFonts() {
+	const [spaceGrotesk, archivoBlack] = await Promise.all([
+		fetchGoogleFontForOg('Space Grotesk', 600),
+		fetchGoogleFontForOg('Archivo Black', 400),
 	]);
 	return [
-		{ name: 'DM Sans', data: dmSans600, weight: 600 as const, style: 'normal' as const },
-		{ name: 'DM Sans', data: dmSans700, weight: 700 as const, style: 'normal' as const },
+		{ name: 'Space Grotesk', data: spaceGrotesk, weight: 600 as const, style: 'normal' as const },
+		{ name: 'Archivo Black', data: archivoBlack, weight: 400 as const, style: 'normal' as const },
 	];
 }

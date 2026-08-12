@@ -10,35 +10,35 @@ web
 
 ## Users
 
-Students and English learners — people actively studying English who value the explanations as much as the corrections. They arrive with a short draft (an email, a message, an assignment paragraph) and want it fixed *and* understood: each correction is a small lesson. Many are non-native readers, so the interface itself must stay easy to parse.
+Students and English learners who want to send short English texts with confidence. They bring an email, message, or assignment paragraph and want three things quickly: a clean correction, a plain explanation, and confirmation that the message means what they intended.
 
 ## Product Purpose
 
-QuickRefine is an AI proofreading tool for short English texts (up to 600 characters). Users paste a draft into the on-page editor and get grammar and punctuation corrections, tone smoothing, and a short explanation for every change — the rule behind it and an example. Success means visitors try the editor, sign in with Google, and come back: a growing base of habitual, repeat users.
+QuickRefine is an AI proofreading tool for English texts up to 600 characters. It corrects clear language errors, offers useful alternatives, explains every change, and summarizes the intended meaning in one sentence. Success means users understand the correction, trust the result, and return whenever they need to send something important.
 
 ## Positioning
 
-It teaches while it fixes. Every correction comes with the rule and an example — you get better, not just corrected. This is the claim every screen reinforces, and what separates QuickRefine from Grammarly, DeepL Write, and pasting into ChatGPT.
+**Fix it. Understand it.** QuickRefine is the direct, high-confidence proofreader for learners. It does not hide corrections behind vague suggestions: every result exposes the revised text, the reason for each fix, alternative phrasings, and a meaning check.
 
 ## Brand Personality
 
-Warm, patient, encouraging. Like a friendly tutor: mistakes are learning moments, never judgments. The tone celebrates progress and explains without condescension. The current warm paper-and-teal visual language carries this voice.
+Bold, direct, optimistic, and encouraging. QuickRefine behaves like the tutor who circles the answer, explains it clearly, and moves on. It is energetic without becoming childish, confident without becoming punitive, and visually impossible to confuse with a generic AI tool.
 
 ## Anti-references
 
-- Grammarly-style SaaS: mascot energy, upsell banners, feature-matrix marketing, freemium nagging.
-- Sterile AI-tool template: dark gradient hero, glassmorphism, sparkle emoji, "powered by GPT" genericism.
-- Academic / test-prep: red-pen grading, scores and percentages, exam pressure, institutional dryness.
-- Toy / gamified learning: streaks, badges, cartoon mascots — anything that undermines being taken seriously.
+- Grammarly-style SaaS: upsell banners, feature matrices, freemium nagging, or mascot-led correction.
+- Sterile AI templates: dark gradients, glassmorphism, vague sparkle language, or “powered by AI” filler.
+- Academic grading: scores, percentages, exam pressure, or shame-driven red-pen feedback.
+- Decorative neobrutalism: random colors, illegible type, motion for its own sake, or visual noise that competes with the editor.
 
 ## Design Principles
 
-1. **The editor is the product.** The draft editor and its correction loop come first; marketing sections support it, never crowd it.
-2. **Every correction is a lesson.** Explanations get first-class visual treatment — the rule and example are the payoff, not fine print.
-3. **Patient, never punitive.** Corrections read as guidance from a tutor, not grading. No red-pen severity, no scores, no shame.
-4. **Plain enough for a learner.** UI copy and hierarchy must be effortless for non-native readers — short labels, familiar patterns, no cleverness that costs clarity.
-5. **Earn the return visit.** Design for the habitual second and tenth use, not just the first impression: fast to re-enter, friction-free to re-run.
+1. **The editor is the product.** The draft and result loop stays first, large, and immediately usable.
+2. **Show the work.** Corrections, explanations, alternatives, and meaning are visibly separated and easy to scan.
+3. **Be loud, not confusing.** Strong color, type, borders, and hard shadows create recognition; layout and copy remain simple.
+4. **Correct without judging.** Errors are clear but never framed as a score or personal failure.
+5. **Optimize for the repeat visit.** Returning users can paste, analyze, copy, and leave with minimal friction.
 
 ## Accessibility & Inclusion
 
-WCAG AA: body text at ≥4.5:1 contrast, visible focus states on all interactive elements, `prefers-reduced-motion` alternatives for every animation, and full keyboard operability of the editor and correction results.
+WCAG AA minimum: body text at 4.5:1 contrast, visible focus states for every control, full keyboard operation, meaningful labels, and reduced-motion fallbacks. Bold presentation must improve hierarchy rather than reduce readability for non-native readers.

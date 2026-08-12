@@ -6,7 +6,7 @@ import TextAnalyzer from '@/components/TextAnalyzer';
 export default function Home() {
 	return (
 		<>
-			<section className='mx-auto max-w-4xl px-4 text-center padding sm:px-6'>
+			<section className='mx-auto max-w-5xl px-4 padding sm:px-6'>
 				<Hero />
 				<TextAnalyzer />
 			</section>

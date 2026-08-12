@@ -12,10 +12,9 @@ export const OPENROUTER_MODEL = 'openai/gpt-5.6-luna';
 export const MAX_CHARACTERS = 600;
 
 const config = {
-	appName:
-		'QuickRefine | Improve Your English – Instantly Verify and Enhance Your Text',
+	appName: 'QuickRefine | Fix It. Understand It.',
 	appDescription:
-		'Check your English writing with AI-powered proofreader. Get instant grammar and punctuation corrections, style refinements, and clear explanations to boost your skills.',
+		'Proofread short English texts, understand every correction, and confirm your intended meaning before you send.',
 	domainName: 'quickrefine.com',
 	auth: {
 		loginUrl: '',

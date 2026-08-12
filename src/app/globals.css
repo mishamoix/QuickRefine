@@ -3,60 +3,48 @@
 @tailwind utilities;
 
 :root {
-	--background: #faf8f5;
-	--foreground: #1c1917;
+	--background: #f5f0e6;
+	--foreground: #000000;
+	--neo-black: #000000;
+	--neo-white: #ffffff;
+	--neo-cream: #f5f0e6;
+	--neo-yellow: #ffeb3b;
+	--neo-blue: #2196f3;
+	--neo-pink: #ff4081;
+	--neo-green: #4caf50;
+	--neo-red: #ff5252;
+}
+
+* {
+	border-color: var(--neo-black);
 }
 
 body {
 	color: var(--foreground);
 	background: var(--background);
-	font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+	font-family: var(--font-sans), Arial, sans-serif;
 }
 
-/* Atmospheric wash — sits behind content */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: -1;
-	pointer-events: none;
-	background:
-		radial-gradient(ellipse 120% 80% at 10% -10%, rgba(13, 92, 99, 0.09), transparent 50%),
-		radial-gradient(ellipse 90% 60% at 100% 20%, rgba(139, 90, 43, 0.06), transparent 45%),
-		var(--background);
+::selection {
+	background: var(--neo-yellow);
+	color: var(--neo-black);
 }
 
 @layer utilities {
 	.padding {
-		@apply px-2 py-12 sm:py-24 max-md:px-4;
+		@apply px-4 py-14 sm:px-6 sm:py-24;
 	}
 
 	.padding-x {
-		@apply px-8 sm:px-16;
+		@apply px-6 sm:px-12;
 	}
 
 	.padding-y {
-		@apply py-12 sm:py-24;
-	}
-
-	.padding-l {
-		@apply pl-8 sm:pl-16;
-	}
-
-	.padding-r {
-		@apply pr-8 sm:pr-16;
-	}
-
-	.padding-t {
-		@apply pt-12 sm:pt-24;
-	}
-
-	.padding-b {
-		@apply pb-12 sm:pb-24;
+		@apply py-14 sm:py-24;
 	}
 
 	.info-text {
-		@apply text-lg leading-7 text-base-content/70;
+		@apply text-lg font-medium leading-7 text-black;
 	}
 
 	.animate-delay-100 {
@@ -70,6 +58,29 @@ body::before {
 	}
 }
 
+@layer components {
+	.card {
+		@apply rounded-none border-[3px] border-black bg-white px-6 py-5 shadow-[6px_6px_0_#000] max-sm:px-4 max-sm:py-4;
+	}
+
+	.prose-panel {
+		@apply rounded-none border-[3px] border-black bg-white px-4 py-3 text-left text-black;
+	}
+
+	.neo-button {
+		@apply rounded-none border-2 border-black bg-white font-bold uppercase text-black shadow-[4px_4px_0_#000] transition-[transform,box-shadow,background-color] duration-100 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0_#000] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-black;
+	}
+
+	.neo-button.btn:disabled {
+		@apply cursor-not-allowed border-black bg-base-200 text-black opacity-100 shadow-[2px_2px_0_#000];
+		transform: none;
+	}
+
+	.neo-section-title {
+		@apply font-display text-3xl uppercase leading-none tracking-tight text-black md:text-5xl;
+	}
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.animate-fade-up,
 	.animate-fade-in {
@@ -77,14 +88,11 @@ body::before {
 		opacity: 1 !important;
 		transform: none !important;
 	}
-}
 
-@layer components {
-	.card {
-		@apply rounded-xl border border-base-300/80 bg-base-100/90 px-6 py-5 shadow-sm backdrop-blur-sm max-sm:px-4 max-sm:py-4;
-	}
-
-	.prose-panel {
-		@apply rounded-lg border border-base-300/90 bg-base-200/60 px-4 py-3 text-left text-base-content;
+	.neo-button,
+	.neo-button:hover,
+	.neo-button:active {
+		transition: none !important;
+		transform: none !important;
 	}
 }

@@ -10,7 +10,7 @@ const SignInButton = () => {
 
 	return (
 		<button
-			className='btn btn-ghost btn-sm font-medium text-base-content/70 hover:bg-base-200'
+			className='btn btn-sm neo-button bg-white'
 			onClick={handleClick}
 		>
 			Sign In

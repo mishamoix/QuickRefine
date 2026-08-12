@@ -1,52 +1,37 @@
 'use client';
-import React from 'react';
-import config from '@/config';
+
 import SignInButton from './SignInButton';
 import { useSession, signOut } from 'next-auth/react';
 
-const Header: React.FC = () => {
+export default function Header() {
 	const { data: session, status } = useSession();
 
-	const handleSignOut = () => {
-		signOut();
-	};
-
-	const ButtonElement = () => {
-		if (status === 'loading') {
-			return <div className='loading loading-dots loading-sm text-slate-500' />;
-		}
-
-		if (status === 'authenticated' && session) {
-			return (
+	return (
+		<header className='fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b-[3px] border-black bg-primary px-4 sm:px-8 lg:px-12'>
+			<a
+				href='/'
+				className='font-display text-lg uppercase tracking-tight text-black focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-black sm:text-xl'
+			>
+				QuickRefine
+			</a>
+			{status === 'loading' ? (
+				<div className='loading loading-dots loading-sm text-black' />
+			) : status === 'authenticated' && session ? (
 				<div className='flex items-center gap-3'>
-					<p className='hidden text-sm font-medium text-base-content/80 sm:block'>
-						Hey, {session.user.name || 'friend'}
+					<p className='hidden text-sm font-bold text-black sm:block'>
+						HEY, {(session.user.name || 'FRIEND').toUpperCase()}
 					</p>
 					<button
 						type='button'
-						className='btn btn-ghost btn-sm font-medium text-base-content/70 hover:bg-base-200'
-						onClick={handleSignOut}
+						className='btn btn-sm neo-button bg-white'
+						onClick={() => signOut()}
 					>
 						Sign out
 					</button>
 				</div>
-			);
-		}
-
-		return <SignInButton />;
-	};
-
-	return (
-		<header className='fixed left-0 right-0 top-0 z-50 flex h-16 items-center justify-between border-b border-base-300/70 bg-base-100/85 px-6 backdrop-blur-md sm:px-10 lg:px-14'>
-			<a
-				href='/'
-				className='font-display text-xl font-semibold tracking-tight text-base-content transition-colors hover:text-primary sm:text-2xl'
-			>
-				QuickRefine
-			</a>
-			<ButtonElement />
+			) : (
+				<SignInButton />
+			)}
 		</header>
 	);
-};
-
-export default Header;
+}

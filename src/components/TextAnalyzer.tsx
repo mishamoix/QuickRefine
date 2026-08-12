@@ -237,17 +237,17 @@ export default function TextAnalyzer() {
 	};
 
 	return (
-		<div className='mt-16 max-md:mt-10 max-sm:mt-4'>
+		<div className='mt-12 max-sm:mt-8'>
 			<div className='space-y-8'>
 				<div className='card text-left'>
 					<form onSubmit={handleSubmit} className='space-y-4'>
 						<div className='flex items-end justify-between gap-3'>
-							<label htmlFor='draft-text' className='font-display text-lg font-semibold text-base-content'>
+							<label htmlFor='draft-text' className='font-display text-lg uppercase text-black'>
 								Your draft
 							</label>
 							<span
-								className={`tabular-nums text-xs font-medium ${
-									isOverLimit ? 'text-error' : 'text-base-content/45'
+								className={`border-2 border-black px-2 py-1 font-sans text-xs font-bold tabular-nums ${
+									isOverLimit ? 'bg-error text-black' : 'bg-primary text-black'
 								}`}
 							>
 								{characterCount} / {MAX_CHARACTERS}
@@ -265,15 +265,15 @@ export default function TextAnalyzer() {
 								onKeyDown={handleKeyDown}
 								placeholder='Paste or write here. Example: “I has went to the market yesterday, and buyed some apples—they was fresh.”'
 								rows={4}
-								className={`textarea textarea-bordered w-full resize-y rounded-xl border-base-300 bg-base-100 px-4 py-3 pr-12 font-sans text-base leading-relaxed text-base-content placeholder:text-base-content/35 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:min-h-[13rem] ${
-									isOverLimit ? 'textarea-error border-error focus:ring-error/25' : ''
+								className={`textarea w-full resize-y rounded-none border-[3px] border-black bg-white px-4 py-3 pr-12 font-sans text-base font-medium leading-relaxed text-black placeholder:text-[#666666] focus:border-black focus:outline-none focus:shadow-[5px_5px_0_#000] sm:min-h-[13rem] ${
+									isOverLimit ? 'bg-error' : ''
 								}`}
 							/>
 							{currentText ? (
 								<button
 									type='button'
 									onClick={handleClearText}
-									className='btn btn-ghost btn-sm btn-square absolute right-2 top-2 text-base-content/50 hover:bg-base-200 hover:text-base-content'
+									className='btn btn-sm btn-square neo-button absolute right-2 top-2 bg-white'
 									title='Clear text'
 									aria-label='Clear text'
 								>
@@ -284,7 +284,7 @@ export default function TextAnalyzer() {
 
 						{error ? (
 							<div
-								className='flex items-start gap-3 rounded-xl border border-error/30 bg-error/5 px-4 py-3 text-sm text-error'
+								className='flex items-start gap-3 border-[3px] border-black bg-error px-4 py-3 text-sm font-bold text-black shadow-[4px_4px_0_#000]'
 								role='alert'
 							>
 								<LanguageIcon className='size-5 shrink-0' aria-hidden />
@@ -293,7 +293,7 @@ export default function TextAnalyzer() {
 									<button
 										type='button'
 										onClick={handleLogin}
-										className='btn btn-ghost btn-sm -my-1 shrink-0 rounded-lg text-primary hover:bg-primary/10'
+										className='btn btn-sm neo-button -my-1 shrink-0 bg-white'
 									>
 										Sign in
 									</button>
@@ -301,7 +301,7 @@ export default function TextAnalyzer() {
 									<button
 										type='button'
 										onClick={handleRetry}
-										className='btn btn-ghost btn-sm -my-1 shrink-0 rounded-lg text-primary hover:bg-primary/10'
+										className='btn btn-sm neo-button -my-1 shrink-0 bg-white'
 									>
 										Try again
 									</button>
@@ -310,7 +310,7 @@ export default function TextAnalyzer() {
 						) : null}
 
 						<div className='flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between'>
-							<p className='order-2 text-xs text-base-content/70 sm:order-1'>
+							<p className='order-2 text-xs font-bold text-black sm:order-1'>
 								<span className='font-medium'>Tip:</span> Enter submits; Shift+Enter for a new
 								line.
 							</p>
@@ -319,7 +319,7 @@ export default function TextAnalyzer() {
 									<button
 										type='button'
 										onClick={() => reset()}
-										className='btn btn-ghost rounded-lg text-base-content/70 hover:bg-base-200'
+										className='btn neo-button bg-white'
 									>
 										Clear results
 									</button>
@@ -327,7 +327,7 @@ export default function TextAnalyzer() {
 								<button
 									type='button'
 									onClick={handlePasteFromClipboard}
-									className='btn btn-ghost border border-base-300/80 bg-base-200/50 hover:bg-base-300/50'
+									className='btn neo-button bg-white'
 									title='Paste from clipboard'
 									aria-label='Paste from clipboard'
 								>
@@ -336,9 +336,7 @@ export default function TextAnalyzer() {
 								</button>
 								<button
 									type='submit'
-									className={`btn btn-primary min-w-[10rem] rounded-xl px-6 ${
-										!isTextValid || isPending ? 'btn-disabled' : ''
-									}`}
+									className='btn neo-button min-w-[10rem] bg-primary px-6'
 									disabled={!isTextValid || isPending}
 								>
 									{isPending ? (
@@ -366,22 +364,22 @@ export default function TextAnalyzer() {
 								</span>
 
 								{parsed.ok && parsed.noMistakes ? (
-									<div className='rounded-xl border border-success/30 bg-success/5 px-4 py-3'>
-										<p className='font-medium text-success'>
+									<div className='border-[3px] border-black bg-success px-4 py-3 shadow-[4px_4px_0_#000]'>
+										<p className='font-bold text-black'>
 											{parsed.noMistakesText || '✅ No mistakes, excellent'}
 										</p>
-										<p className='mt-1 text-sm leading-relaxed text-base-content/70'>
+										<p className='mt-1 text-sm font-medium leading-relaxed text-black'>
 											Your text is already correct. It is ready to send.
 										</p>
 									</div>
 								) : (
-									<div className='prose-panel relative border-primary/15 bg-base-200/50 pr-12 sm:pr-24'>
+									<div className='prose-panel relative bg-primary pr-12 sm:pr-24'>
 										<button
 											type='button'
 											onClick={() =>
 												copyText(parsed.ok ? parsed.corrected ?? undefined : parsed.raw)
 											}
-											className='btn btn-ghost btn-sm absolute right-2 top-2 gap-1 rounded-lg'
+											className='btn btn-sm neo-button absolute right-2 top-2 gap-1 bg-white'
 											title='Copy revised text'
 											aria-label='Copy revised text'
 										>
@@ -390,14 +388,14 @@ export default function TextAnalyzer() {
 												Copy
 											</span>
 										</button>
-										<p className='mb-2 text-xs font-semibold uppercase tracking-wider text-primary'>
+										<p className='mb-2 font-display text-sm uppercase text-black'>
 											Revised text
 										</p>
-										<p className='whitespace-pre-wrap font-sans text-base leading-relaxed'>
+										<p className='whitespace-pre-wrap font-sans text-base font-medium leading-relaxed'>
 											<BoldText text={parsed.ok ? parsed.corrected ?? '' : parsed.raw} />
 										</p>
 										{parsed.ok ? (
-											<p className='mt-2 text-sm text-base-content/65'>
+											<p className='mt-2 text-sm font-medium text-black'>
 												Bold text shows what changed.
 											</p>
 										) : null}
@@ -406,20 +404,20 @@ export default function TextAnalyzer() {
 
 								{parsed.ok && parsed.mistakes.length > 0 ? (
 									<div>
-										<p className='font-display text-base font-semibold text-base-content'>
+										<p className='font-display text-base uppercase text-black'>
 											Why it changed
 										</p>
 										<div className='mt-2 space-y-3'>
 											{parsed.mistakes.map((mistake, i) => (
 												<div
 													key={i}
-													className='rounded-lg border border-base-300/80 bg-base-200/40 px-4 py-3'
+													className='border-2 border-black bg-white px-4 py-3'
 												>
-													<p className='text-sm leading-relaxed text-base-content/80'>
-														<span className='text-base-content/60'>{mistake.from}</span>
+													<p className='text-sm font-medium leading-relaxed text-black'>
+														<span>{mistake.from}</span>
 														<span aria-hidden='true'>{' → '}</span>
 														<span className='sr-only'> changed to </span>
-														<strong className='font-semibold text-base-content'>
+														<strong className='font-bold text-black'>
 															{mistake.to}
 														</strong>
 														{'. '}
@@ -433,20 +431,20 @@ export default function TextAnalyzer() {
 
 								{parsed.ok && parsed.alternatives.length > 0 ? (
 									<div>
-										<p className='font-display text-base font-semibold text-base-content'>
+										<p className='font-display text-base uppercase text-black'>
 											Alternatives
 										</p>
-										<p className='mt-1 text-sm text-base-content/65'>
+										<p className='mt-1 text-sm font-medium text-black'>
 											Other ways to say it. Copy the one you like.
 										</p>
 										<div className='mt-2 space-y-3'>
 											{parsed.alternatives.map((alternative, i) => (
 												<div
 													key={i}
-													className='flex items-start justify-between gap-3 rounded-lg border border-base-300/80 bg-base-200/40 px-4 py-3'
+													className='flex items-start justify-between gap-3 border-2 border-black bg-white px-4 py-3'
 												>
-													<p className='text-sm leading-relaxed text-base-content/80'>
-														<span className='font-medium text-base-content'>
+													<p className='text-sm font-medium leading-relaxed text-black'>
+														<span className='font-bold text-black'>
 															{alternative.type}:
 														</span>{' '}
 														<BoldText text={alternative.text} />
@@ -454,7 +452,7 @@ export default function TextAnalyzer() {
 													<button
 														type='button'
 														onClick={() => copyText(alternative.text)}
-														className='btn btn-ghost btn-sm btn-square -my-1 shrink-0 rounded-lg text-base-content/60 hover:bg-base-300/60 hover:text-base-content'
+														className='btn btn-sm btn-square neo-button -my-1 shrink-0 bg-primary'
 														title={`Copy the "${alternative.type}" version`}
 														aria-label={`Copy the "${alternative.type}" version`}
 													>
@@ -468,11 +466,11 @@ export default function TextAnalyzer() {
 
 								{meaning ? (
 									<div>
-										<p className='font-display text-base font-semibold text-base-content'>
+										<p className='font-display text-base uppercase text-black'>
 											Meaning
 										</p>
-										<div className='mt-2 rounded-lg border border-base-300/80 bg-base-200/40 px-4 py-3'>
-											<p className='text-sm leading-relaxed text-base-content/80'>
+										<div className='mt-2 border-2 border-black bg-accent px-4 py-3'>
+											<p className='text-sm font-medium leading-relaxed text-black'>
 												{meaning}
 											</p>
 										</div>

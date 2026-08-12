@@ -1,11 +1,7 @@
 import { IconMarkContent } from './og-icon-mark';
 
-/**
- * JSX for `next/og` ImageResponse — Satori requires explicit display on multi-child divs.
- */
+/** Neobrutalist social card for next/og ImageResponse. */
 export function OpenGraphImageContent() {
-	const markSize = 96;
-
 	return (
 		<div
 			style={{
@@ -13,10 +9,10 @@ export function OpenGraphImageContent() {
 				width: '100%',
 				display: 'flex',
 				flexDirection: 'column',
-				padding: '56px 64px',
-				background:
-					'radial-gradient(ellipse 90% 70% at 12% 8%, rgba(13, 92, 99, 0.14), transparent 52%), radial-gradient(ellipse 70% 50% at 92% 88%, rgba(139, 90, 43, 0.1), transparent 45%), linear-gradient(165deg, #faf8f5 0%, #f0ebe3 48%, #e8dfd2 100%)',
-				fontFamily: 'DM Sans',
+				padding: '48px 56px',
+				background: '#f5f0e6',
+				color: '#000000',
+				fontFamily: 'Space Grotesk',
 			}}
 		>
 			<div
@@ -24,29 +20,35 @@ export function OpenGraphImageContent() {
 					display: 'flex',
 					flexDirection: 'row',
 					alignItems: 'center',
-					gap: 24,
+					justifyContent: 'space-between',
 				}}
 			>
-				<div
-					style={{
-						display: 'flex',
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'center',
-						filter: 'drop-shadow(0 10px 22px rgba(13, 92, 99, 0.35))',
-					}}
-				>
-					<IconMarkContent sizePx={markSize} />
+				<div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+					<div style={{ display: 'flex', border: '3px solid #000000', boxShadow: '6px 6px 0 #000000' }}>
+						<IconMarkContent sizePx={76} />
+					</div>
+					<div
+						style={{
+							fontFamily: 'Archivo Black',
+							fontSize: 34,
+							textTransform: 'uppercase',
+						}}
+					>
+						QuickRefine
+					</div>
 				</div>
 				<div
 					style={{
-						fontSize: 40,
-						fontWeight: 600,
-						color: '#0d5c63',
-						letterSpacing: '-0.02em',
+						display: 'flex',
+						background: '#ff4081',
+						border: '3px solid #000000',
+						boxShadow: '5px 5px 0 #000000',
+						padding: '10px 16px',
+						fontWeight: 700,
+						textTransform: 'uppercase',
 					}}
 				>
-					QuickRefine
+					English proofreading
 				</div>
 			</div>
 
@@ -55,46 +57,25 @@ export function OpenGraphImageContent() {
 					display: 'flex',
 					flexDirection: 'column',
 					flexGrow: 1,
-					flexShrink: 1,
 					justifyContent: 'center',
-					paddingTop: 24,
-					paddingBottom: 24,
+					fontFamily: 'Archivo Black',
+					fontSize: 82,
+					lineHeight: 0.94,
+					letterSpacing: '-0.04em',
+					textTransform: 'uppercase',
 				}}
 			>
+				<div style={{ display: 'flex' }}>Fix it.</div>
 				<div
 					style={{
 						display: 'flex',
-						flexDirection: 'column',
-						gap: 12,
+						alignSelf: 'flex-start',
+						background: '#ffeb3b',
+						border: '3px solid #000000',
+						padding: '4px 12px',
 					}}
 				>
-					<div
-						style={{
-							display: 'flex',
-							flexDirection: 'row',
-							flexWrap: 'wrap',
-							alignItems: 'baseline',
-							fontSize: 88,
-							fontWeight: 700,
-							lineHeight: 1.05,
-							color: '#1c1917',
-							letterSpacing: '-0.03em',
-						}}
-					>
-						<span>Your English,</span>
-						<span style={{ color: '#0d5c63' }}> refined</span>
-					</div>
-					<div
-						style={{
-							fontSize: 88,
-							fontWeight: 700,
-							lineHeight: 1.05,
-							color: '#1c1917',
-							letterSpacing: '-0.03em',
-						}}
-					>
-						and explained.
-					</div>
+					Understand it.
 				</div>
 			</div>
 		</div>

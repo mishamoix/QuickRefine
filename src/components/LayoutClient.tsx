@@ -17,7 +17,7 @@ const ClientLayout = ({ children }: { children: ReactNode }) => {
 						toastOptions={{
 							duration: 3000,
 							className:
-								'!rounded-xl !border !border-base-300 !bg-base-100 !text-base-content !shadow-md',
+								'!rounded-none !border-[3px] !border-black !bg-white !font-bold !text-black !shadow-[5px_5px_0_#000]',
 						}}
 					/>
 				</QueryProvider>
