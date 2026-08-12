@@ -365,17 +365,6 @@ export default function TextAnalyzer() {
 										: 'Revised text is ready.'}
 								</span>
 
-								{meaning ? (
-									<div className='rounded-lg border border-base-300/80 bg-base-200/40 px-4 py-3'>
-										<p className='font-display text-base font-semibold text-base-content'>
-											Meaning
-										</p>
-										<p className='mt-1 text-sm leading-relaxed text-base-content/80'>
-											{meaning}
-										</p>
-									</div>
-								) : null}
-
 								{parsed.ok && parsed.noMistakes ? (
 									<div className='rounded-xl border border-success/30 bg-success/5 px-4 py-3'>
 										<p className='font-medium text-success'>
@@ -473,6 +462,19 @@ export default function TextAnalyzer() {
 													</button>
 												</div>
 											))}
+										</div>
+									</div>
+								) : null}
+
+								{meaning ? (
+									<div>
+										<p className='font-display text-base font-semibold text-base-content'>
+											Meaning
+										</p>
+										<div className='mt-2 rounded-lg border border-base-300/80 bg-base-200/40 px-4 py-3'>
+											<p className='text-sm leading-relaxed text-base-content/80'>
+												{meaning}
+											</p>
 										</div>
 									</div>
 								) : null}
