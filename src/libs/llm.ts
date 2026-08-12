@@ -30,6 +30,7 @@ const explainSchema = z.object({
 
 const fastModeSchema = z.object({
 	text: z.string().optional(),
+	meaning: z.string().optional(),
 	error: z.string().optional(),
 });
 

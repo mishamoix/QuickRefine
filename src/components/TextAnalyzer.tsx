@@ -128,6 +128,7 @@ export default function TextAnalyzer() {
 
 	const isLoggedIn = status === 'authenticated' && session;
 	const parsed = data?.text ? parseFastResult(data.text) : null;
+	const meaning = data?.meaning;
 
 	// Shared by the submit button and the Enter shortcut: sign logged-out
 	// users in, otherwise run the analysis.
@@ -363,6 +364,17 @@ export default function TextAnalyzer() {
 										? 'Result is ready. No mistakes found.'
 										: 'Revised text is ready.'}
 								</span>
+
+								{meaning ? (
+									<div className='rounded-lg border border-base-300/80 bg-base-200/40 px-4 py-3'>
+										<p className='font-display text-base font-semibold text-base-content'>
+											Meaning
+										</p>
+										<p className='mt-1 text-sm leading-relaxed text-base-content/80'>
+											{meaning}
+										</p>
+									</div>
+								) : null}
 
 								{parsed.ok && parsed.noMistakes ? (
 									<div className='rounded-xl border border-success/30 bg-success/5 px-4 py-3'>

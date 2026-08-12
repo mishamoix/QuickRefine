@@ -8,11 +8,13 @@ export interface Mistake {
 
 export interface EnhancedText {
 	text: string;
+	meaning: string;
 	mistakes?: Mistake[];
 }
 
 export interface FastModeResponse {
 	text: string;
+	meaning: string;
 }
 
 export interface ApiError {

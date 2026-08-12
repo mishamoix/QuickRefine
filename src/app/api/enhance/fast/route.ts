@@ -107,6 +107,7 @@ export async function POST(req: NextRequest) {
 
 		const finalResult = {
 			text: result.data.text,
+			meaning: result.data.meaning,
 		};
 
 		trace.update({
