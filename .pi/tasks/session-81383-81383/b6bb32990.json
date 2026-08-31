@@ -1,0 +1,20 @@
+{
+  "id": "b6bb32990",
+  "name": "Build redesigned site",
+  "command": "npm run build",
+  "description": "Run the production Next.js build to catch TypeScript, React, Tailwind, and image-generation failures.",
+  "status": "completed",
+  "outputPath": ".pi/tasks/session-81383-81383/b6bb32990.output",
+  "cwd": "/Users/mike/Documents/WorkNStudy/Projects/bizarre_fusion/fix_english",
+  "startTime": 1786527583386,
+  "endTime": 1786527586969,
+  "exitCode": 0,
+  "signal": null,
+  "pid": 87396,
+  "bytesWritten": 1184,
+  "isAgent": false,
+  "notified": true,
+  "notifyOnCompletion": true,
+  "triggerOnCompletion": true,
+  "timeoutSeconds": 600
+}

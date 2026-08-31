@@ -1,0 +1,20 @@
+{
+  "id": "b4708ef96",
+  "name": "Build neobrutalist redesign",
+  "command": "npm run build",
+  "description": "Verify full-site neobrutalist redesign, social images, fonts, and TypeScript",
+  "status": "completed",
+  "outputPath": ".pi/tasks/session-45659-45659/b4708ef96.output",
+  "cwd": "/Users/mike/Documents/WorkNStudy/Projects/bizarre_fusion/fix_english",
+  "startTime": 1786527483125,
+  "endTime": 1786527487626,
+  "exitCode": 0,
+  "signal": null,
+  "pid": 80612,
+  "bytesWritten": 1341,
+  "isAgent": false,
+  "notified": true,
+  "notifyOnCompletion": true,
+  "triggerOnCompletion": true,
+  "timeoutSeconds": 1200
+}

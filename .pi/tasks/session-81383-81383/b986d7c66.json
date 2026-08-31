@@ -1,0 +1,21 @@
+{
+  "id": "b986d7c66",
+  "name": "Serve review build",
+  "command": "npm start -- --hostname 127.0.0.1 --port 4173",
+  "description": "Serve the production build briefly for responsive visual inspection.",
+  "status": "failed",
+  "outputPath": ".pi/tasks/session-81383-81383/b986d7c66.output",
+  "cwd": "/Users/mike/Documents/WorkNStudy/Projects/bizarre_fusion/fix_english",
+  "startTime": 1786528051377,
+  "endTime": 1786528351414,
+  "exitCode": 143,
+  "signal": null,
+  "pid": 19351,
+  "bytesWritten": 1348,
+  "isAgent": false,
+  "error": "Timed out after 300s",
+  "notified": true,
+  "notifyOnCompletion": true,
+  "triggerOnCompletion": false,
+  "timeoutSeconds": 300
+}

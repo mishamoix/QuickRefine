@@ -1,0 +1,39 @@
+
+> fix_english@1.0.0 build
+> next build
+
+▲ Next.js 16.3.0 (Turbopack)
+- Environments: .env
+⚠ Warning: Next.js ignored package-lock.json in /Users/mike because it is outside the current Git repository (/Users/mike/Documents/WorkNStudy/Projects/bizarre_fusion/fix_english).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.js took 7ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 291ms
+  Running TypeScript ...
+  Finished TypeScript in 795ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/10) ...
+  Generating static pages using 11 workers (2/10) 
+  Generating static pages using 11 workers (4/10) 
+  Generating static pages using 11 workers (7/10) 
+✓ Generating static pages using 11 workers (10/10) in 371ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/enhance
+├ ƒ /api/enhance/fast
+├ ƒ /api/health
+├ ○ /apple-icon
+├ ○ /icon
+├ ○ /opengraph-image
+└ ○ /twitter-image
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

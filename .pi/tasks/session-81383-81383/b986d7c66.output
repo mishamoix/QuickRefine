@@ -1,0 +1,36 @@
+
+> fix_english@1.0.0 start
+> next start --hostname 127.0.0.1 --port 4173
+
+▲ Next.js 16.3.0
+- Local:         http://127.0.0.1:4173
+- Network:       http://127.0.0.1:4173
+✓ Ready in 71ms
+⚠ Warning: Next.js ignored package-lock.json in /Users/mike because it is outside the current Git repository (/Users/mike/Documents/WorkNStudy/Projects/bizarre_fusion/fix_english).
+ To use this directory, set `outputFileTracingRoot` in your Next.js config.
+
+✓ Running next.config.js took 9ms
+⨯ unhandledRejection: MongoServerSelectionError: 801D6AF601000000:error:0A000438:SSL routines:ssl3_read_bytes:tlsv1 alert internal error:ssl/record/rec_layer_s3.c:918:SSL alert number 80
+
+    at ignore-listed frames {
+  reason: TopologyDescription {
+    type: 'ReplicaSetNoPrimary',
+    servers: Map(3) {
+      'fixeng-shard-00-00.x0gcy.mongodb.net:27017' => [ServerDescription],
+      'fixeng-shard-00-01.x0gcy.mongodb.net:27017' => [ServerDescription],
+      'fixeng-shard-00-02.x0gcy.mongodb.net:27017' => [ServerDescription]
+    },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    setName: 'atlas-jk8oad-shard-0',
+    maxElectionId: null,
+    maxSetVersion: null,
+    commonWireVersion: 0,
+    logicalSessionTimeoutMinutes: null
+  },
+  code: undefined
+}
+
+[background task timeout: Timed out after 300s]
